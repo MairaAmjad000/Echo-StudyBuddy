@@ -1,0 +1,100 @@
+/* marketing header + footer */
+.top { display: flex; align-items: center; justify-content: space-between; padding: 24px 0; }
+.top nav { display: flex; align-items: center; gap: 28px; font: 500 15px/1 var(--display); }
+.top nav a { text-decoration: none; }
+.top nav a:not(.btn):hover { text-decoration: underline; text-underline-offset: 4px; }
+.top .btn-primary { padding: 12px 18px; font-size: 15px; }
+.top .btn-text { padding: 0; }
+
+.site-footer { border-top: 1px solid var(--rule); padding: 28px 0 40px; font: 500 15px/1 var(--display); color: var(--ink-2); }
+.site-footer .wrap { display: flex; justify-content: space-between; gap: 24px; flex-wrap: wrap; }
+.site-footer nav { display: flex; gap: 24px; }
+.site-footer a { text-decoration: none; }
+.site-footer a:hover { text-decoration: underline; text-underline-offset: 4px; }
+
+/* app shell */
+.shell { display: grid; grid-template-columns: 256px minmax(0, 1fr); min-height: 100vh; }
+.shell-bar { display: none; }
+
+/* The app's own sidebar: a white sheet against the fog page, with the section
+   labels, the active pill and the account card all drawn from the tokens. */
+.sidebar {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow-y: auto;
+  background: var(--sheet);
+  border-right: 1px solid var(--rule);
+  scrollbar-width: thin;
+  scrollbar-color: var(--line) transparent;
+}
+.sidebar-inner { display: flex; flex-direction: column; min-height: 100%; padding: 22px 14px 18px; }
+.sidebar-logo { padding: 0 8px 18px; margin-bottom: 18px; border-bottom: 1px solid var(--rule); }
+
+.nav-group { margin-bottom: 20px; }
+.nav-title { padding: 0 12px 8px; font: 700 12.5px/1.2 var(--display); color: var(--ink-2); letter-spacing: 0.01em; }
+.nav-link {
+  position: relative;
+  display: block;
+  padding: 9px 12px;
+  border-radius: var(--r-btn);
+  text-decoration: none;
+  font: 500 15px/1.25 var(--display);
+  color: var(--ink-2);
+}
+.nav-link:hover { background: var(--fog); color: var(--ink); }
+.nav-link.is-active { background: var(--blue-tint); color: var(--ink); font-weight: 700; }
+/* A blue marker on the pill, so the current page is obvious at a glance. */
+.nav-link.is-active::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 3px;
+  height: 18px;
+  border-radius: 2px;
+  background: var(--blue);
+}
+
+/* Account card pinned to the bottom of the sidebar. */
+.user-card {
+  margin: auto 4px 0;
+  padding: 14px;
+  display: grid;
+  gap: 10px;
+  background: var(--fog);
+  border: 1px solid var(--rule);
+  border-radius: var(--r-card);
+}
+.user-row { display: flex; align-items: center; gap: 10px; }
+.avatar { width: 36px; height: 36px; border-radius: 50%; background: var(--ink); color: #fff; display: grid; place-items: center; font: 700 16px/1 var(--display); flex: none; }
+/* A chosen picture fills the same circle as the initial. */
+.avatar-img { object-fit: cover; background: var(--fog); }
+.user-name { font: 700 15px/1.2 var(--display); }
+.user-level { font: 500 13px/1.3 var(--display); color: var(--ink-2); }
+.user-xp { font: 500 12.5px/1.3 var(--display); color: var(--ink-2); }
+.user-card .btn-text { justify-self: start; padding: 2px 0; color: var(--ink-2); border: 0; cursor: pointer; }
+.user-card .btn-text:hover { color: var(--ink); }
+
+.shell-main { padding: 36px clamp(20px, 4vw, 48px) 96px; min-width: 0; max-width: 1180px; width: 100%; }
+/* Pages that hold a rail beside their main content (chat history) get more room,
+   and a tighter gutter so the rail never eats into the conversation. */
+/* Same top spacing as every other tool page; a tighter bottom keeps the
+   conversation tall. */
+.shell-main-wide { max-width: 1500px; padding-inline: clamp(20px, 3vw, 32px); padding-top: 36px; padding-bottom: 20px; }
+
+@media (max-width: 900px) {
+  .shell { grid-template-columns: 1fr; }
+  .shell-bar { display: flex; align-items: center; justify-content: space-between; padding: 12px 20px; background: var(--sheet); border-bottom: 1px solid var(--rule); position: sticky; top: 0; z-index: 20; }
+  .sidebar { position: fixed; inset: 58px 0 0 0; height: auto; z-index: 19; transform: translateX(-100%); transition: transform 0.2s ease; border-right: 0; box-shadow: 0 24px 48px -24px rgba(20, 33, 61, 0.45); }
+  .sidebar.is-open { transform: none; }
+  .sidebar-logo { display: none; }
+  .sidebar-inner { padding-top: 16px; }
+  .nav-link { padding: 11px 12px; }
+  .shell-main { padding-top: 28px; }
+}
+@media (max-width: 700px) {
+  .top nav a:not(.btn) { display: none; }
+  .top nav .top-login { display: inline-block; }
+}

@@ -1,0 +1,51 @@
+/* Printing (Ctrl+P) runs through the browser's own pipeline, so the notes
+   come out in the site's own type and stay selectable, searchable text —
+   nothing is rasterised. Any page of the app simply prints its content
+   without the chrome. */
+@media print {
+  html,
+  body { background: #fff; }
+  html { scroll-behavior: auto; }
+
+  /* Chrome that has no meaning on paper. */
+  .shell-bar,
+  .sidebar,
+  .top,
+  .site-footer,
+  .companion,
+  .toasts,
+  .boot-splash,
+  .page-header { display: none !important; }
+
+  /* The shell stops being a grid: the content takes the whole sheet. */
+  .shell { display: block; min-height: 0; }
+  .shell-main { width: auto; max-width: none; padding: 0; }
+
+  /* The reading rail belongs to the screen; the notes are the document. */
+  .toc { display: none !important; }
+  .notes-layout { display: block; background: #fff; border: 0; }
+  .note-body { padding: 0; }
+
+  /* Sections break only where they must: a heading keeps its text, and a
+     group of points never splits down the middle of a page. */
+  .note-section { padding: 0 0 20pt; border-bottom: 0; }
+  .note-section h2 { break-after: avoid; }
+  .note-summary,
+  .note-group,
+  .note-terms { break-inside: avoid; }
+  .note-actions,
+  .echo-note,
+  .btn { display: none !important; }
+
+  /* The document header, which only exists on paper. */
+  .note-print-head {
+    display: block !important;
+    margin-bottom: 18pt;
+    padding-bottom: 10pt;
+    border-bottom: 1px solid var(--rule);
+  }
+  .note-print-head h1 { font-size: 20pt; }
+  .note-print-head p { margin-top: 5pt; font: 500 10pt/1.4 var(--display); color: var(--ink-2); }
+
+  @page { margin: 16mm; }
+}

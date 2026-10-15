@@ -1,0 +1,32 @@
+.recorder { padding: 20px; display: grid; gap: 14px; }
+.recorder-topic { font: 500 15px/1.3 var(--display); color: var(--ink-2); }
+.recorder-topic strong { color: var(--ink); }
+.waveform { width: 100%; height: 72px; display: block; color: var(--blue); }
+.recorder-row { display: flex; align-items: center; gap: 16px; }
+.recorder-time { font: 800 32px/1 var(--display); font-variant-numeric: tabular-nums; }
+.recorder-status { flex: 1; font: 500 15px/1.3 var(--display); color: var(--ink-2); }
+.rec-btn { width: 52px; height: 52px; border-radius: 50%; border: 2px solid var(--ink); background: var(--sheet); display: grid; place-items: center; cursor: pointer; }
+.rec-btn span { width: 18px; height: 18px; border-radius: 50%; background: var(--pen); }
+.rec-btn.is-stop { border-color: var(--pen); }
+.rec-btn.is-stop span { border-radius: 3px; }
+.rec-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+.explain-box { margin-top: 20px; }
+.explain-box .field textarea { min-height: 150px; }
+.interim { margin-top: 6px; font-style: italic; color: var(--ink-2); font-size: 15px; min-height: 1.6em; }
+
+.feedback { padding: 22px; margin-top: 20px; display: grid; gap: 18px; }
+.feedback-head { display: flex; align-items: center; gap: 14px; }
+.feedback-line { flex: 1; font: 700 19px/1.3 var(--display); }
+.feedback-group h4 { font: 700 15px/1.3 var(--display); margin-bottom: 6px; }
+.fb-list { margin: 0; padding: 0; list-style: none; display: grid; gap: 8px; font-size: 16px; }
+.fb-list li { padding-left: 22px; position: relative; }
+.fb-ok li::before { content: ''; position: absolute; left: 3px; top: 0.55em; width: 10px; height: 6px; border-left: 2.5px solid var(--blue); border-bottom: 2.5px solid var(--blue); transform: rotate(-45deg); }
+.fb-miss li { color: var(--pen); }
+.fb-miss li::before { content: '!'; position: absolute; left: 4px; top: 0; font: 800 15px/1.6 var(--display); }
+
+.topic-picker { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; margin-bottom: 20px; }
+@media (max-width: 700px) {
+  .topic-picker { grid-template-columns: 1fr; }
+  .feedback-head { flex-wrap: wrap; }
+}

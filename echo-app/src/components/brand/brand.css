@@ -1,0 +1,39 @@
+/* Navbar + sidebar lockup: the Echo image mark next to the wordmark. */
+.logo {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+}
+.logo-mark {
+  display: block;
+  width: 42px;
+  height: 42px;
+  border-radius: 10px;
+  flex: none;
+}
+
+@media (max-width: 640px) {
+  .logo { gap: 8px; }
+  .logo-mark { width: 34px; height: 34px; border-radius: 8px; }
+}
+
+.echomark {
+  display: inline-flex;
+  align-items: center;
+  vertical-align: middle;
+}
+
+.echomark-avatar {
+  border-radius: 50%;
+  flex-shrink: 0;
+  display: block;
+}
+
+/* Small sizes: keep the logo avatar crisp and readable. */
+@media (max-width: 640px) {
+  .echomark-avatar {
+    width: 34px;
+    height: 34px;
+  }
+}

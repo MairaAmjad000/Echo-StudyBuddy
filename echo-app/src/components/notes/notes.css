@@ -1,0 +1,117 @@
+.notes-layout { display: grid; grid-template-columns: 250px minmax(0, 1fr); background: var(--sheet); border: 1px solid var(--rule); border-radius: var(--r-paper); }
+
+/* The reading rail: the app sidebar's language at document scale — a white
+   sheet, a rule on the reading edge, a numbered index and a blue pill with a
+   marker for the section you are on. It keeps its own scroll so a long
+   document never drags its title out of reach. */
+.toc {
+  position: sticky;
+  top: 16px;
+  align-self: start;
+  max-height: calc(100vh - 40px);
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  overflow: hidden;
+  background: var(--sheet);
+  border-right: 1px solid var(--rule);
+  font: 500 15px/1.35 var(--display);
+}
+/* The head never moves: only the list beneath it scrolls. The document name,
+   the count and its bar stay in view however long the document runs. */
+.toc-head {
+  padding: 18px 14px 12px;
+  background: var(--sheet);
+  border-bottom: 1px solid var(--rule);
+}
+.toc-kicker { padding: 0 8px 6px; font: 700 12.5px/1.2 var(--display); color: var(--ink-2); }
+.toc-title { padding: 0 8px; color: var(--ink); font: 700 15px/1.3 var(--display); word-break: break-word; }
+.toc-count { padding: 10px 8px 7px; font: 600 12.5px/1.3 var(--display); color: var(--ink-2); font-variant-numeric: tabular-nums; }
+.toc-count strong { color: var(--ink); }
+.toc-bar { height: 6px; margin: 0 8px; }
+
+.toc-list {
+  margin: 0;
+  padding: 12px 12px 20px;
+  list-style: none;
+  display: grid;
+  gap: 2px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: var(--line) transparent;
+}
+.toc-item {
+  position: relative;
+  display: grid;
+  grid-template-columns: 20px minmax(0, 1fr) auto;
+  align-items: start;
+  gap: 8px;
+  width: 100%;
+  text-align: left;
+  padding: 9px 10px 9px 12px;
+  border: 0;
+  border-radius: var(--r-btn);
+  background: none;
+  color: var(--ink-2);
+  cursor: pointer;
+  font: inherit;
+}
+.toc-item:hover { background: var(--fog); color: var(--ink); }
+.toc-item.is-on { background: var(--blue-tint); color: var(--ink); font-weight: 700; }
+/* The same blue marker the app sidebar puts on the page you are on. */
+.toc-item.is-on::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 3px;
+  height: 18px;
+  border-radius: 2px;
+  background: var(--blue);
+}
+/* Numbers sit in a quiet column of their own, so titles align and a document
+   that numbers its own headings still reads as one index. */
+.toc-index { text-align: right; font: 700 12.5px/1.55 var(--display); color: var(--ink-2); font-variant-numeric: tabular-nums; }
+.toc-item.is-on .toc-index { color: var(--blue-dark); }
+.toc-label { min-width: 0; word-break: break-word; }
+/* A tag, not a headline: it never squeezes the title it belongs to. */
+.toc-done {
+  margin-top: 1px;
+  padding: 3px 8px;
+  border-radius: 999px;
+  background: var(--blue-tint);
+  color: var(--blue-dark);
+  font: 700 11.5px/1 var(--display);
+  white-space: nowrap;
+}
+.toc-item.is-on .toc-done { background: var(--sheet); }
+
+.note-body { padding: 8px 32px 32px; min-width: 0; }
+/* The document header exists only when the notes are printed or saved as PDF
+   (the rules live in styles/print.css). */
+.note-print-head { display: none; }
+.note-section { padding: 28px 0; border-bottom: 1px solid var(--rule); scroll-margin-top: 16px; }
+.note-section:last-child { border-bottom: 0; }
+.note-section h2 { font-size: 1.5rem; margin-bottom: 14px; }
+.note-summary { display: grid; gap: 10px; font-size: 17px; max-width: 70ch; }
+.note-group { margin-top: 18px; }
+.note-group h4 { font: 700 15px/1.3 var(--display); margin-bottom: 6px; }
+.note-group ul { margin: 0; padding-left: 22px; font-size: 16.5px; }
+.note-terms { margin: 0; display: grid; gap: 8px; font-size: 16.5px; }
+.note-terms dt { font: 700 15px/1.4 var(--display); }
+.note-terms dd { margin: 0; color: var(--ink-2); }
+.note-actions { margin-top: 20px; }
+.btn.is-done { background: var(--blue-tint); border-color: var(--blue); color: var(--ink); }
+
+@media (max-width: 900px) {
+  .notes-layout { grid-template-columns: 1fr; }
+  /* Narrow screens fold the rail into a row of chips above the notes. */
+  .toc { position: static; display: block; max-height: none; overflow: visible; border-right: 0; border-bottom: 1px solid var(--rule); }
+  .toc-head { padding: 14px 12px 0; border-bottom: 0; }
+  .toc-bar { max-width: 320px; }
+  .toc-list { display: flex; flex-wrap: wrap; gap: 6px; padding: 12px 12px 14px; overflow: visible; }
+  .toc-item { display: flex; width: auto; align-items: center; padding: 8px 12px; }
+  .toc-index { display: none; }
+  .toc-item.is-on::before { display: none; }
+  .note-body { padding: 4px 20px 24px; }
+}

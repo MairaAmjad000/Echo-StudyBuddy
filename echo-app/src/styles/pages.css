@@ -1,0 +1,202 @@
+/* page-level layout shared by the app pages */
+.narrow { max-width: 720px; }
+.page-note { margin-top: 32px; max-width: 560px; }
+
+/* Companion slots: the mascot sits in the free space beside the
+   page's main component (battle arena, card deck, recorder...). */
+.side-by-side { display: grid; grid-template-columns: minmax(0, 760px) auto; gap: 40px; align-items: start; justify-content: start; }
+.drop-row { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 28px; align-items: start; }
+.map-row { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 28px; align-items: start; }
+.note-mate { display: flex; gap: 40px; align-items: flex-end; }
+
+@media (max-width: 1020px) {
+  .side-by-side { grid-template-columns: 1fr; }
+  .drop-row, .map-row { grid-template-columns: 1fr; }
+  .note-mate { flex-direction: column; align-items: flex-start; }
+}
+
+/* auth */
+.auth { min-height: 100vh; display: flex; flex-direction: column; align-items: center; padding: 28px 20px 60px; }
+.auth-top { width: min(1160px, 100%); }
+.auth-card { margin-top: 48px; width: min(440px, 100%); padding: 32px; display: grid; gap: 16px; box-shadow: 0 1px 0 rgba(20, 33, 61, 0.06), 0 28px 40px -28px rgba(20, 33, 61, 0.4); }
+.auth-card h1 { font-size: 1.9rem; }
+.auth-card .btn { justify-self: start; }
+
+/* learning map */
+.map-panel { padding: 28px clamp(16px, 3vw, 40px); }
+.map-progress { display: flex; align-items: center; gap: 14px; margin-bottom: 26px; font: 600 14px/1 var(--display); color: var(--ink-2); max-width: 420px; }
+.map-progress .bar { flex: 1; }
+.map-progress strong { color: var(--ink); }
+.stop-detail { margin-top: 20px; padding: 24px; display: grid; gap: 12px; }
+.stop-detail h2 { font-size: 1.5rem; }
+
+/* performance */
+.perf-grid { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 20px; align-items: start; }
+.perf-xp { grid-column: 1 / span 4; padding: 24px; }
+.perf-chart { grid-column: 5 / span 8; padding: 24px; }
+.perf-attrs { grid-column: 1 / span 7; padding: 24px; }
+.perf-sn { grid-column: 8 / span 5; padding: 24px; display: grid; gap: 24px; }
+.perf-xp h3, .perf-chart h3, .perf-attrs h3, .perf-sn h3 { font-size: 1.1rem; margin-bottom: 10px; }
+.perf-big { font: 800 52px/1 var(--display); letter-spacing: -0.03em; margin-bottom: 8px; font-variant-numeric: tabular-nums; }
+.perf-sn ul { margin: 0; padding-left: 20px; font: 500 16px/1.7 var(--display); }
+.perf-sn .needs { color: var(--pen); }
+
+/* achievements */
+.achievements { list-style: none; margin: 0; padding: 0; }
+.achievements li { display: grid; grid-template-columns: minmax(0, 1fr) 280px; gap: 24px; align-items: center; padding: 20px 24px; border-top: 1px solid var(--rule); }
+.achievements li:first-child { border-top: 0; }
+.achievements h3 { font-size: 1.1rem; }
+.achievements li.is-unlocked h3::after { content: ' Unlocked'; font: 700 13px/1 var(--display); color: var(--blue); margin-left: 8px; }
+.ach-progress { display: grid; gap: 6px; font-family: var(--display); }
+
+/* settings */
+.settings { display: grid; gap: 20px; max-width: 640px; }
+.settings-block { padding: 24px; display: grid; gap: 14px; }
+.settings-block h3 { font-size: 1.15rem; }
+.check { display: flex; gap: 12px; align-items: flex-start; font: 500 16px/1.5 var(--display); cursor: pointer; }
+.check input { width: 20px; height: 20px; margin-top: 2px; accent-color: var(--blue); }
+
+/* Profile: an Instagram-style portrait with a camera badge. Tapping it opens
+   the character picker. Without a picture it shows the initial, like the
+   sidebar card does. */
+.profile-pic-row { display: flex; align-items: center; gap: 18px; flex-wrap: wrap; }
+.profile-pic { position: relative; width: 88px; height: 88px; flex: none; padding: 0; border: 0; background: none; cursor: pointer; border-radius: 50%; }
+.profile-pic img,
+.profile-pic-fallback {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid var(--rule);
+  background: var(--fog);
+}
+.profile-pic-fallback { display: grid; place-items: center; background: var(--ink); color: #fff; font: 700 32px/1 var(--display); }
+.profile-pic-cam {
+  position: absolute;
+  right: -3px;
+  bottom: -3px;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: var(--blue);
+  color: #fff;
+  display: grid;
+  place-items: center;
+  border: 2.5px solid var(--sheet);
+  transition: transform 0.15s ease;
+}
+.profile-pic:hover .profile-pic-cam { transform: scale(1.1); }
+.profile-pic-info { display: grid; gap: 6px; justify-items: start; min-width: 0; max-width: 380px; }
+.profile-pic-name { font: 700 17px/1.25 var(--display); }
+.profile-pic-info .muted { font-size: 0.92rem; }
+/* A compact blue pill, matching the camera badge on the portrait — it must
+   read as a button, not as an underlined link. */
+.profile-pic-info .btn-quiet {
+  margin-top: 4px;
+  padding: 8px 16px;
+  font-size: 14px;
+  border-radius: 999px;
+  border-color: var(--blue);
+  color: var(--blue);
+}
+.profile-pic-info .btn-quiet:hover:not(:disabled) { background: var(--blue-tint); }
+
+/* The character picker popup: backdrop, card and its header. The backdrop
+   stays under the toast layer so Echo's notes remain visible over it. */
+.picker-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 45;
+  background: rgba(20, 33, 61, 0.55);
+  display: grid;
+  place-items: center;
+  padding: 20px;
+  animation: picker-fade 0.18s ease;
+}
+.picker {
+  width: min(620px, 100%);
+  max-height: min(80vh, 700px);
+  overflow-y: auto;
+  padding: 24px 26px 26px;
+  display: grid;
+  gap: 18px;
+  box-shadow: 0 30px 60px -20px rgba(20, 33, 61, 0.5);
+  animation: picker-pop 0.22s cubic-bezier(0.34, 1.4, 0.64, 1);
+}
+.picker-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; }
+.picker-head h3 { font-size: 1.2rem; margin: 0; }
+.picker-head p { margin-top: 5px; font-size: 0.94rem; }
+.picker-close {
+  flex: none;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: 1px solid var(--rule);
+  background: var(--sheet);
+  color: var(--ink-2);
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+.picker-close:hover { background: var(--fog); color: var(--ink); }
+
+@keyframes picker-fade { from { opacity: 0; } }
+@keyframes picker-pop {
+  from { transform: translateY(10px) scale(0.96); opacity: 0; }
+  to { transform: translateY(0) scale(1); opacity: 1; }
+}
+
+/* The character grid inside the popup. Chosen gets a blue ring and a tick;
+   locked portraits fade back behind a soft veil and a clean padlock, with the
+   opening level spelled out underneath. */
+.avatar-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(74px, 1fr)); gap: 16px 10px; }
+.avatar-pick { display: grid; justify-items: center; gap: 7px; padding: 0; background: none; border: 0; cursor: pointer; font: 600 12.5px/1.2 var(--display); color: var(--ink-2); }
+.avatar-pick-face {
+  position: relative;
+  display: block;
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 2px solid var(--rule);
+  background: var(--fog);
+  transition: transform 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+}
+.avatar-pick-face img { display: block; width: 100%; height: 100%; object-fit: cover; }
+.avatar-pick:hover .avatar-pick-face { transform: translateY(-2px); border-color: var(--blue); }
+.avatar-pick.is-chosen .avatar-pick-face { border-color: var(--blue); box-shadow: 0 0 0 3px var(--blue-tint); }
+.avatar-pick.is-chosen .avatar-pick-name { color: var(--ink); }
+.avatar-tick {
+  position: absolute;
+  right: 3px;
+  bottom: 3px;
+  width: 17px;
+  height: 17px;
+  border-radius: 50%;
+  background: var(--blue);
+  color: #fff;
+  display: grid;
+  place-items: center;
+  border: 1.5px solid var(--sheet);
+}
+
+.avatar-pick[aria-disabled='true'] { cursor: not-allowed; }
+.avatar-pick[aria-disabled='true'] .avatar-pick-face img { filter: grayscale(1); opacity: 0.55; }
+.avatar-pick[aria-disabled='true']:hover .avatar-pick-face { transform: none; border-color: var(--rule); }
+.avatar-lock {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  background: rgba(255, 255, 255, 0.38);
+  color: rgba(20, 33, 61, 0.78);
+}
+.avatar-pick-name { text-align: center; }
+.avatar-level { display: inline-flex; align-items: center; gap: 4px; }
+
+@media (max-width: 980px) {
+  .perf-xp, .perf-chart, .perf-attrs, .perf-sn { grid-column: 1 / -1; }
+  .achievements li { grid-template-columns: 1fr; gap: 10px; }
+}

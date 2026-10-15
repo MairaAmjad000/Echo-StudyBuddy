@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-150 -150 300 300">
+  <!-- Strobi: blue spherical head with two wide eyes, echoing the avatar -->
+  <circle r="150" fill="#5b7fe5"/>
+  <g transform="translate(0,-10) rotate(-14)">
+    <ellipse cx="-34" cy="0" rx="13" ry="26" fill="#111316" transform="rotate(-8 -34 0)"/>
+    <ellipse cx="34" cy="0" rx="13" ry="26" fill="#111316" transform="rotate(8 34 0)"/>
+  </g>
+</svg>

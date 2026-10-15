@@ -1,0 +1,35 @@
+/* Design tokens.
+   Colour : fog page, white sheets, ink navy text, eye blue for actions, red pen only for "missed / needs work".
+   Type   : Archivo (wide, heavy) for headings and UI, Literata (bookish serif) for reading text.
+   Rules  : no gradients, no glow, no glass, no emoji, no uppercase labels. */
+:root {
+  --fog: #eef2f6;
+  --sheet: #ffffff;
+  --ink: #14213d;
+  --ink-2: #4a5a72;
+  --blue: #1f5fe0;
+  --blue-dark: #1749b5;
+  --blue-tint: #e1eafa;
+  --eye: #5ca2ff;
+  --pen: #c8321f;
+  --pen-tint: #f8e2de;
+  --line: #d6e2f0;
+  --rule: rgba(20, 33, 61, 0.16);
+
+  --display: 'Archivo', 'Helvetica Neue', Arial, sans-serif;
+  --text: 'Literata', Georgia, 'Times New Roman', serif;
+
+  --s1: 4px;
+  --s2: 8px;
+  --s3: 16px;
+  --s4: 24px;
+  --s5: 32px;
+  --s6: 48px;
+  --s7: 72px;
+  --s8: 112px;
+
+  --r-paper: 2px;
+  --r-btn: 6px;
+  --r-card: 14px;
+  --r-panel: 10px;
+}

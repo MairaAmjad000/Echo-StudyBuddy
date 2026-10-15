@@ -1,0 +1,38 @@
+.arena { background: var(--ink); color: #eaf0fa; border-radius: var(--r-panel); padding: 26px; }
+.fighters { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; padding-bottom: 22px; border-bottom: 1px solid rgba(255, 255, 255, 0.18); }
+.fighter { display: flex; align-items: center; gap: 12px; min-width: 0; }
+.fighter svg { flex: none; }
+.fighter-who { flex: 1; min-width: 0; font: 600 14px/1.3 var(--display); }
+.fighter-who small { display: block; margin-top: 6px; font-weight: 500; color: #afc0da; }
+.hp { display: block; height: 8px; margin-top: 6px; border-radius: 4px; background: rgba(255, 255, 255, 0.18); overflow: hidden; }
+.hp > i { display: block; height: 100%; background: var(--eye); transition: width 0.3s ease; }
+.hp-foe > i { background: #f08a7c; }
+
+.arena-count { margin-top: 22px; font: 500 14px/1 var(--display); color: #afc0da; }
+.arena-q { margin-top: 10px; font: 700 21px/1.25 var(--display); letter-spacing: -0.01em; }
+.arena-opts { margin-top: 14px; display: grid; gap: 8px; }
+.opt {
+  display: flex; align-items: center; gap: 12px; width: 100%; text-align: left; background: transparent; color: inherit;
+  border: 1.5px solid rgba(255, 255, 255, 0.3); border-radius: 8px; padding: 12px 14px; font: 500 16px/1.3 var(--display); cursor: pointer;
+}
+.opt:hover:not(:disabled) { border-color: #fff; }
+.opt-letter { width: 22px; font-weight: 800; color: var(--eye); }
+.opt-text { flex: 1; }
+.opt-tag { font-size: 13px; font-weight: 700; }
+.opt:disabled { cursor: default; }
+.opt:disabled:not(.is-right):not(.is-wrong) { opacity: 0.55; }
+.opt.is-right { border-color: var(--eye); background: rgba(92, 162, 255, 0.16); }
+.opt.is-wrong { border-color: #f08a7c; background: rgba(240, 138, 124, 0.14); }
+.arena-fb { margin-top: 16px; min-height: 4.4em; font-size: 15.5px; line-height: 1.5; color: #dce6f5; }
+.arena .btn-quiet { color: #eaf0fa; }
+.arena .btn-quiet:hover { background: rgba(255, 255, 255, 0.1); }
+
+.arena-result { padding-top: 22px; display: grid; gap: 10px; }
+.arena-result-title { font: 700 22px/1.25 var(--display); }
+.arena-result-sub { font-size: 15.5px; color: #dce6f5; }
+.arena-result .btn-row { margin-top: 8px; }
+.arena-result a.btn-quiet { color: #eaf0fa; }
+
+@media (max-width: 700px) {
+  .fighters { grid-template-columns: 1fr; }
+}

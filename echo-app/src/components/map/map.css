@@ -1,0 +1,73 @@
+/* Learning map: one winding SVG trail that fills the panel — no scrollbar.
+   Every shape takes its colour from the tokens, so a stop reads the same way
+   everywhere else in the app: fog = not open yet, blue = finished,
+   blue outline = where you are now. */
+
+.course-map { width: 100%; }
+.map-trail {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+/* The route: faint dashes ahead, a solid blue line behind you. */
+.trail-base {
+  stroke: var(--line);
+  stroke-width: 6;
+  stroke-linecap: round;
+  stroke-dasharray: 1 16;
+}
+.trail-done {
+  stroke: var(--blue);
+  stroke-width: 6;
+  stroke-linecap: round;
+}
+
+/* Stops ------------------------------------------------------------------- */
+.trail-stop { color: var(--ink-2); } /* currentColor: padlock + current dot */
+.trail-stop.is-clickable { cursor: pointer; }
+
+.node { stroke-width: 3; }
+.node-locked { fill: var(--fog); stroke: var(--line); }
+.node-current { fill: var(--sheet); stroke: var(--blue); }
+.node-done { fill: var(--blue); stroke: var(--blue-dark); }
+.node-boss { stroke-width: 3; }
+
+/* Open but not started: white disc ringed in blue, a blue dot in the middle */
+.trail-stop.is-current { color: var(--blue); }
+/* Finished: solid blue with the white tick drawn in the component */
+.trail-stop.is-done { color: var(--blue); }
+/* Still shut: soft fog disc, muted padlock */
+.trail-stop.is-locked { color: var(--ink-2); }
+
+.is-locked .node-boss { fill: var(--fog); stroke: var(--line); }
+.is-current .node-boss { fill: var(--ink); stroke: var(--ink); }
+.is-done .node-boss { fill: var(--blue); stroke: var(--blue-dark); }
+.boss-face { font: 800 26px var(--display); fill: currentColor; }
+.is-current .boss-face,
+.is-done .boss-face { fill: #fff; }
+
+/* The dashed halo around the stop whose detail is open below the map. */
+.ring { stroke: var(--blue); stroke-width: 2.5; stroke-dasharray: 6 7; opacity: 0.9; }
+
+/* Selecting a stop must show only the dashed halo — never a rectangular focus
+   box around the whole group. Keyboard focus still reads clearly through the
+   thicker, darker node stroke below. */
+.trail-stop:focus,
+.trail-stop:focus-visible { outline: none; }
+
+.is-clickable:hover .node,
+.is-clickable:focus-visible .node { stroke: var(--blue-dark); stroke-width: 4; }
+.is-clickable:hover .node-boss,
+.is-clickable:focus-visible .node-boss { stroke: var(--blue-dark); stroke-width: 4; }
+.is-clickable:hover .node-locked { fill: var(--blue-tint); stroke: var(--blue); }
+.is-clickable:hover .trail-label { fill: var(--blue); }
+
+/* Labels ------------------------------------------------------------------ */
+.trail-label { font: 600 15px var(--display); fill: var(--ink); }
+.is-locked .trail-label { fill: var(--ink-2); }
+.trail-here { font: 700 13px var(--display); fill: var(--blue); }
+
+@media (max-width: 640px) {
+  .trail-label { font-size: 14px; }
+}
