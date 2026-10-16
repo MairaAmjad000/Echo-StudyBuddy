@@ -54,6 +54,19 @@ html.dark .companion-note-error {
 html.dark .greeting-say-error::after {
   border-left-color: #c1402d;
 }
+/* On a phone the bubble stacks above Echo, so its tail points down at him
+   instead of right (see dashboard.css). Every rule above paints only the left
+   edge, and the light-mode tail colour would leave a pale triangle hanging off
+   the navy panel — so the down-facing edge takes the same fill as the bubble. */
+@media (max-width: 700px) {
+  html.dark .greeting-say::after,
+  html.dark .greeting-say-warn::after,
+  html.dark .greeting-say-error::after {
+    border-left-color: transparent;
+    border-top-color: var(--chip);
+  }
+  html.dark .greeting-say-error::after { border-top-color: #c1402d; }
+}
 html.dark .companion-note-error::after {
   border-top-color: #c1402d;
 }

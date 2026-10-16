@@ -69,13 +69,36 @@
   .greeting-say { animation: none; }
 }
 
+/* At phone and tablet widths the app's top bar carries the light/dark switch,
+   so the dashboard's own copy of it would put two of them on one screen. */
+@media (max-width: 900px) {
+  .dash-toolbar { display: none; }
+}
+
 @media (max-width: 980px) {
   .dash-grid { grid-template-columns: 1fr; }
 }
 @media (max-width: 700px) {
-  .greeting { flex-direction: column; align-items: flex-start; }
-  .greeting-echo-wrap { width: 100%; }
-  .greeting-say { max-width: none; flex: 1; }
+  /* The greeting stacks on a phone: the line of speech takes the full width and
+     Echo sits under his own tail, so the bubble reads as one or two lines
+     instead of a narrow column squeezed beside him. */
+  .greeting { flex-direction: column; align-items: stretch; gap: 16px; padding: 20px 18px; }
+  .greeting-copy { align-items: flex-start; gap: 14px; }
+  .greeting-avatar { width: 56px; height: 56px; }
+  .greeting h1 { font-size: 1.5rem; }
+  .greeting-echo-wrap { width: 100%; flex-direction: column; align-items: flex-end; gap: 6px; }
+  .greeting-say { max-width: none; align-self: stretch; border-radius: 12px 12px 12px 4px; }
+  /* The tail follows him: it points down at the mascot instead of right at it. */
+  .greeting-say::after {
+    right: 22px;
+    bottom: -7px;
+    border-width: 8px;
+    border-style: solid;
+    border-color: transparent;
+    border-top-color: var(--ink);
+    border-bottom-width: 0;
+  }
+  .greeting-say-error::after { border-top-color: var(--pen); }
   .stat-strip { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .stat-strip > div:nth-child(3) { border-left: 0; }
   .stat-strip > div:nth-child(n + 3) { border-top: 1px solid var(--rule); }

@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { Outlet, useLocation } from 'react-router-dom'
 import Logo from '../brand/Logo.jsx'
 import Sidebar from './Sidebar.jsx'
+import ThemeToggle from '../ui/ThemeToggle.jsx'
 import ToastHost from '../ui/ToastHost.jsx'
 import ErrorBoundary from '../ui/ErrorBoundary.jsx'
 import './layout.css'
@@ -20,9 +21,16 @@ export default function AppShell() {
     <div className="shell">
       <header className="shell-bar">
         <Logo to="/app" />
-        <button type="button" className="btn btn-quiet" aria-expanded={open} aria-controls="sidebar" onClick={() => setOpen((o) => !o)}>
-          {open ? 'Close' : 'Menu'}
-        </button>
+        {/* The top bar only exists on phones. The light/dark switch lives here
+            as well, so it is one of the bar's controls instead of a button
+            floating on its own above whatever the page happens to start with
+            (the dashboard hides its own copy of it at this width). */}
+        <div className="shell-bar-actions">
+          <ThemeToggle />
+          <button type="button" className="btn btn-quiet" aria-expanded={open} aria-controls="sidebar" onClick={() => setOpen((o) => !o)}>
+            {open ? 'Close' : 'Menu'}
+          </button>
+        </div>
       </header>
 
       <aside id="sidebar" className={`sidebar${open ? ' is-open' : ''}`}>
