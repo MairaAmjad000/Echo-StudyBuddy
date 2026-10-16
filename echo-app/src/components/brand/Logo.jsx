@@ -10,7 +10,7 @@ export default function Logo({ to = '/' }) {
   return (
     <Link className="logo" to={to} aria-label="Echo home">
       <img className="logo-mark" src="/echo.png" alt="" width="42" height="42" />
-      Echo
+      <span className="logo-word">Echo</span>
     </Link>
   )
 }
