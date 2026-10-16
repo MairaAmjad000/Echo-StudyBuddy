@@ -15,6 +15,28 @@ npm run dev                 # node --watch, http://localhost:4000
 
 Requires MongoDB running locally (or a `MONGODB_URI` in `.env`).
 
+## Deploying to Vercel
+
+Create the project from this repo with **Root Directory `server`** and
+**Framework Preset `Other`**. The Express preset looks for an `app.js` entry and
+then fails every request with `Invalid export found in module
+"/var/task/server/src/app.js". The default export must be a function or server`
+— `src/app.js` exports `createApp` and no default. Vercel only ever runs
+`api/index.js`; `vercel.json` rewrites the whole `/api` surface there because the
+platform's file-system routing matched a single path segment per dynamic file,
+which stranded `/api/auth/me`, `/api/materials/:id` and every other nested route
+with the platform's own 404.
+
+Set these in **Project Settings -> Environment Variables**, for Production (and
+Preview, if previews should work): `NODE_ENV=production`, `MONGODB_URI`,
+`JWT_SECRET`, `CLIENT_ORIGIN` (the frontend's `https://` origin), and optionally
+`JWT_EXPIRES`, `BCRYPT_ROUNDS`, `AI_API_KEY`, `AI_MODEL`, `GOOGLE_CLIENT_ID`,
+`GOOGLE_CLIENT_SECRET`. There is no `PORT`: nothing listens on one. Root
+Directory, preset and environment variables only apply to deployments created
+after the change, so redeploy afterwards, then check
+`https://<domain>/api/health` — `{"ok":true,"env":"production"}` is a
+correctly wired deployment.
+
 ## Google sign-in
 
 Optional, and off until it is configured. Set `GOOGLE_CLIENT_ID` and
