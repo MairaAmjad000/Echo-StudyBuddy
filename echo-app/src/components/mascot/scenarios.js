@@ -282,8 +282,10 @@ export function arrivalStory({ state, streak, lastVisitAt, now = Date.now() }) {
   const hasMaterials = state.materials.length > 0
   const daysAway = lastVisitAt ? Math.floor((now - lastVisitAt) / DAY) : null
 
-  // Coming back after a long gap beats every other greeting.
-  if (daysAway !== null && daysAway >= 7) {
+  // Coming back after a long gap beats every other greeting — but only for a
+  // signed-in student. A visitor without an account has no notes to return
+  // to, so they fall through to the welcome below.
+  if (signedIn && daysAway !== null && daysAway >= 7) {
     return {
       key: 'arrive-after-long',
       pose: 'sad',
@@ -322,6 +324,7 @@ export function arrivalStory({ state, streak, lastVisitAt, now = Date.now() }) {
         line: pickLine('arrive-first', [
           "Hey. I'm Echo. Give me one file and I will turn it into notes, cards and a quiz.",
           "New here? Drop your notes in and I will show you what I can do with them.",
+          'Studying tonight? Upload a chapter and I will build the notes, the cards and the quiz.',
         ]),
         tone: 'info',
         ms: 8000,
@@ -353,8 +356,7 @@ export function arrivalStory({ state, streak, lastVisitAt, now = Date.now() }) {
       pose: 'happy',
       line: pickLine('arrive-back', [
         streak > 0 ? `You are back. ${streak}-day streak still warm.` : 'You are back. Today is a good day to start a streak.',
-        // New line: welcome back
-        'welcome backe',
+        'Back again — the learning map still has the next topic ready.',
         "Good to see you — today's mission is still waiting.",
       ]),
       tone: 'info',
@@ -431,8 +433,38 @@ export function welcomeStory({ hasMaterials, streak, studyDays, avoid }) {
   }
 }
 
-/** How long Echo has been left alone on a tool page. */
-export function idleStory(stage) {
+/**
+ * How long Echo has been left alone on a tool page. A visitor without an
+ * account gets lines about trying the product instead of study nudges:
+ * "the next topic is one click away" means nothing to someone who has no
+ * topics yet.
+ */
+export function idleStory(stage, { signedIn = true } = {}) {
+  if (!signedIn) {
+    if (stage === 'bored') {
+      return {
+        key: 'idle-bored-guest',
+        pose: 'bored',
+        line: pickLine('idle-bored-guest', [
+          'Still here? One file is all it takes — drop your notes in and watch.',
+          'I can wait all day. Your flashcards cannot, though.',
+          'I work from my students\' own notes. Upload a chapter and I will prove it.',
+        ]),
+        tone: 'info',
+        ms: 6000,
+      }
+    }
+    if (stage === 'drowsy') {
+      return {
+        key: 'idle-drowsy-guest',
+        pose: 'drowsy',
+        line: 'I will nap. Wake me with a file whenever you are ready.',
+        tone: 'info',
+        ms: 6000,
+      }
+    }
+    return null
+  }
   if (stage === 'bored') {
     return {
       key: 'idle-bored',
@@ -452,8 +484,16 @@ export function idleStory(stage) {
 }
 
 /** He noticed you came back after dozing off. */
-export function wakeStory() {
-  return { key: 'idle-wake', pose: 'waking', line: 'Oh — you are back. Where were we?', tone: 'info', ms: 5000 }
+export function wakeStory({ signedIn = true } = {}) {
+  return signedIn
+    ? { key: 'idle-wake', pose: 'waking', line: 'Oh — you are back. Where were we?', tone: 'info', ms: 5000 }
+    : {
+        key: 'idle-wake-guest',
+        pose: 'waking',
+        line: 'Oh — welcome back. Ready to try me with one of your files?',
+        tone: 'info',
+        ms: 5000,
+      }
 }
 
 /** The level-up ladder. Every level celebrates; the milestones get their own words. */

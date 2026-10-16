@@ -106,6 +106,9 @@ export function Companion({ route }) {
   const { state, streak, level, toasts, booting } = useApp()
   const { speech, notification, pose, dismiss, react } = useCompanion()
   const hasCourse = readyMaterials(state).length > 0
+  // A visitor without an account hears about trying Echo, not about topics
+  // and streaks they do not have yet.
+  const guest = { signedIn: state.signedIn }
   const defaultPose = mapRoute(route)
   const [animation, setAnimation] = useState('waking')
   const wakeRef = useRef(null)
@@ -217,7 +220,7 @@ export function Companion({ route }) {
         setAnimation('waking')
         clearTimeout(wakeRef.current)
         wakeRef.current = setTimeout(() => setAnimation(defaultPose), 1100)
-        queue(wakeStory())
+        queue(wakeStory(guest))
       }
     }
     activity.forEach((e) => window.addEventListener(e, bump, { passive: true }))
@@ -230,10 +233,10 @@ export function Companion({ route }) {
       if (stage === 0) setAnimation('working')
       else if (stage === 1) {
         setAnimation('bored')
-        queue(idleStory('bored'))
+        queue(idleStory('bored', guest))
       } else if (stage === 2) {
         setAnimation('drowsy')
-        queue(idleStory('drowsy'))
+        queue(idleStory('drowsy', guest))
       } else setAnimation('sleeping')
     }, 5000)
     return () => {

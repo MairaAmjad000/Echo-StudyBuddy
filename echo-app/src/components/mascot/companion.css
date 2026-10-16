@@ -5,13 +5,19 @@
   right: 18px;
   bottom: 14px;
   z-index: 40;
-  width: 148px;
+  /* The box hugs Echo himself. It used to be a fixed 148px wide with the
+     avatar at 50% of it, which left half the box empty — on a phone he sat
+     109px from the corner, nowhere near it. */
+  width: max-content;
   pointer-events: none;
 }
 
 .companion .companion-avatar {
-  width: 50% !important;
-  height: 50% !important;
+  /* The avatar host carries inline display/size styles, so the overrides need
+     !important: no inline-block baseline gap under his feet. */
+  display: block !important;
+  width: 74px !important;
+  height: 74px !important;
   filter: drop-shadow(0 10px 18px rgba(20, 33, 61, 0.18));
 }
 
@@ -136,8 +142,13 @@
 }
 
 /* The boot splash: Echo asleep in the center of the page, just below the
-   "Waking Echo up..." line, then rousing with the burst above. */
+   "Waking Echo up..." line, then rousing with the burst above. It owns the
+   whole screen while it plays — fixed and above the corner companion (z 40)
+   so the only Echo on a splash is the center one. */
 .boot-splash {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
   min-height: 100vh;
   display: grid;
   place-content: center;
@@ -159,3 +170,51 @@
   animation: companion-zzz 2.4s ease-in-out infinite;
 }
 .boot-splash-burst { width: 178px; height: 178px; }
+
+/* Phones: Echo tucks tighter into the corner and his bubble becomes a
+   full-width note above him instead of a 260px card hanging off the edge.
+   Kept last in the file so it wins over the sizes defined above. */
+@media (max-width: 560px) {
+  .companion {
+    right: 12px;
+    /* clear the home indicator on notched phones */
+    bottom: calc(10px + env(safe-area-inset-bottom, 0px));
+  }
+
+  .companion .companion-avatar {
+    width: 60px !important;
+    height: 60px !important;
+  }
+
+  .companion-note {
+    /* The bubble sits beside him, not above: above would cover the page,
+       while his left is all screen. Anchored to his box so it tracks the
+       corner, and capped to whatever width the phone has left. */
+    position: absolute;
+    left: auto;
+    right: calc(100% + 10px);
+    bottom: 4px;
+    width: max-content;
+    max-width: calc(100vw - 100px);
+    font: 500 13.5px/1.42 var(--display);
+    padding: 10px 14px 10px 12px;
+    border-radius: 10px 10px 10px 3px;
+  }
+
+  /* The tail points right, at his face. The tone rules above colour the old
+     top tail, so blank that edge and paint the left one instead. */
+  .companion-note::after {
+    right: -8px;
+    bottom: 12px;
+    border-width: 7px 0 7px 8px;
+    border-top-color: transparent;
+    border-left-color: var(--ink, #14213d);
+  }
+  .companion-note-success::after { border-top-color: transparent; border-left-color: var(--blue, #1f5fe0); }
+  .companion-note-error::after { border-top-color: transparent; border-left-color: var(--pen, #c8321f); }
+  .companion-note-warn::after { border-top-color: transparent; border-left-color: var(--ink, #14213d); }
+
+  .companion-note-dismiss { top: 2px; right: 4px; }
+
+  .companion-splash { width: 120px; height: 120px; }
+}

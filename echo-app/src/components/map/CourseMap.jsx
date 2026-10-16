@@ -2,14 +2,18 @@ import { useEffect, useMemo, useState } from 'react'
 import './map.css'
 
 /**
- * The learning map: one continuous winding trail drawn in SVG, sized to fill
- * the panel width — no scrollbar. Stops snake left→right then right→left, and
- * the line rises and dips between them like a board-game route.
+ * The learning map: one continuous winding trail, drawn to the shape that
+ * fits the screen. On a wide panel that is the board — a serpentine SVG
+ * route whose labels live inside the viewBox, so it fills the panel with no
+ * scrollbar. On a phone the board would shrink its labels into unreadable
+ * specks, so the trail stands up: the same dashed road winds down between
+ * alternating cards, and the boss waits on its dark ground at the end.
  *
  * `stops` is [{ id, title, status: 'done' | 'current' | 'locked', boss? }].
  */
 export default function CourseMap({ stops, selectedId, onSelect, interactive = true, fit = false }) {
   const wide = useMediaQuery('(min-width: 640px)')
+  const narrow = !wide
   const cols = fit ? 5 : wide ? 6 : 5
 
   // Geometry (viewBox units). The board scales with its container.
@@ -36,37 +40,63 @@ export default function CourseMap({ stops, selectedId, onSelect, interactive = t
   const H = pts.length ? pts[pts.length - 1].y + 300 : 200
 
   // Smooth curve through every point, snaking down the board.
-  const track = useMemo(() => {
-    if (pts.length === 0) return ''
-    if (pts.length === 1) return `M${pts[0].x} ${pts[0].y}`
-    const d = []
-    d.push(`M${pts[0].x} ${pts[0].y}`)
-    for (let i = 1; i < pts.length; i += 1) {
-      const a = pts[i - 1]
-      const b = pts[i]
-      const k = Math.abs(b.x - a.x) * 0.5 * Math.sign(b.x - a.x || 1)
-      d.push(`C${a.x + k} ${a.y} ${b.x - k} ${b.y} ${b.x} ${b.y}`)
-    }
-    return d.join(' ')
-  }, [pts])
+  const track = useMemo(() => smoothPath(pts), [pts])
 
   const reached = pts.findLastIndex((p) => p.status !== 'locked')
-  const walked = useMemo(() => {
-    if (reached <= 0) return ''
-    const slice = pts.slice(0, reached + 1)
-    if (slice.length === 1) return `M${slice[0].x} ${slice[0].y}`
-    const d = []
-    d.push(`M${slice[0].x} ${slice[0].y}`)
-    for (let i = 1; i < slice.length; i += 1) {
-      const a = slice[i - 1]
-      const b = slice[i]
-      const k = Math.abs(b.x - a.x) * 0.5 * Math.sign(b.x - a.x || 1)
-      d.push(`C${a.x + k} ${a.y} ${b.x - k} ${b.y} ${b.x} ${b.y}`)
-    }
-    return d.join(' ')
-  }, [pts, reached])
+  const walked = useMemo(() => (reached > 0 ? smoothPath(pts.slice(0, reached + 1)) : ''), [pts, reached])
 
   if (!stops.length) return null
+
+  // The phone layout: rows of a fixed step so the trail behind them always
+  // lands on card centres, however many topics the course has.
+  if (narrow) {
+    const STEP = 90 // card height + the gap
+    const CARD = 76
+    const anchor = (i) => ({ x: i % 2 === 0 ? 310 : 30, y: i * STEP + CARD / 2 })
+    const seg = (from, to) => {
+      if (to <= from) return `M${anchor(from).x} ${anchor(from).y}`
+      const d = [`M${anchor(from).x} ${anchor(from).y}`]
+      for (let i = from + 1; i <= to; i += 1) {
+        const a = anchor(i - 1)
+        const b = anchor(i)
+        d.push(`C${a.x} ${a.y + 40} ${b.x} ${b.y - 40} ${b.x} ${b.y}`)
+      }
+      return d.join(' ')
+    }
+    const JH = (stops.length - 1) * STEP + CARD
+
+    return (
+      <div className="map-journey">
+        {/* One road, one look: the dotted trail runs the whole way down with
+            no highlighted "walked" section — on a phone the heavy blue line
+            read as a dark scar across the cards. Progress lives on the cards
+            themselves (ticks, the blue ring, the padlocks). */}
+        <svg className="journey-map" viewBox={`0 0 340 ${JH}`} preserveAspectRatio="none" aria-hidden="true">
+          <path className="trail-base" d={seg(0, stops.length - 1)} fill="none" vectorEffect="non-scaling-stroke" />
+        </svg>
+
+        {stops.map((s) => {
+          const canOpen = interactive && s.status !== 'locked' && onSelect
+          return (
+            <button
+              key={s.id}
+              type="button"
+              className={`journey-stop is-${s.status}${s.boss ? ' is-boss' : ''}${selectedId === s.id ? ' is-selected' : ''}`}
+              disabled={!canOpen}
+              aria-current={s.status === 'current' ? 'step' : undefined}
+              onClick={canOpen ? () => onSelect(s.id) : undefined}
+            >
+              <span className="journey-node">{nodeGlyph(s)}</span>
+              <span className="journey-body">
+                <span className="journey-title">{s.title}</span>
+                {s.status === 'current' && <span className="journey-here">You are here</span>}
+              </span>
+            </button>
+          )
+        })}
+      </div>
+    )
+  }
 
   return (
     <div className="course-map">
@@ -138,6 +168,39 @@ export default function CourseMap({ stops, selectedId, onSelect, interactive = t
       </g>
     )
   }
+}
+
+/** The glyph inside a journey card's node circle. */
+function nodeGlyph(s) {
+  if (s.boss) return s.status === 'done' ? '✓' : s.status === 'current' ? '!' : '★'
+  if (s.status === 'done') {
+    return (
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path className="tick" d="M6 12.5 10 16.5 18 8" />
+      </svg>
+    )
+  }
+  if (s.status === 'current') return <i />
+  return (
+    <svg viewBox="0 0 24 24" aria-hidden="true">
+      <rect x="5" y="10.5" width="14" height="10" rx="3" />
+      <path d="M8.5 10.5V8a3.5 3.5 0 0 1 7 0v2.5" />
+    </svg>
+  )
+}
+
+/** A smooth curve through every point, snaking down the board. */
+function smoothPath(pts) {
+  if (!pts.length) return ''
+  if (pts.length === 1) return `M${pts[0].x} ${pts[0].y}`
+  const d = [`M${pts[0].x} ${pts[0].y}`]
+  for (let i = 1; i < pts.length; i += 1) {
+    const a = pts[i - 1]
+    const b = pts[i]
+    const k = Math.abs(b.x - a.x) * 0.5 * Math.sign(b.x - a.x || 1)
+    d.push(`C${a.x + k} ${a.y} ${b.x - k} ${b.y} ${b.x} ${b.y}`)
+  }
+  return d.join(' ')
 }
 
 /** Split a title into at most two lines of about `max` characters. */

@@ -22,6 +22,26 @@
 .auth-card h1 { font-size: 1.9rem; }
 .auth-card .btn { justify-self: start; }
 
+/* Continue with Google: the same flat button as the rest of the app — the only
+   colour is Google's own mark, no gradient and no glossy social-button look. */
+.btn-google {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  background: var(--sheet);
+  color: var(--ink);
+  border-color: var(--rule);
+}
+.btn-google:hover:not(:disabled) { background: rgba(20, 33, 61, 0.05); border-color: var(--ink); }
+.btn-google svg { flex: none; }
+
+/* The hairline that separates it from the email form. */
+.auth-or { display: flex; align-items: center; gap: 12px; font: 600 13px/1 var(--display); color: var(--ink-2); }
+.auth-or::before,
+.auth-or::after { content: ''; flex: 1; height: 1px; background: var(--rule); }
+
 /* learning map */
 .map-panel { padding: 28px clamp(16px, 3vw, 40px); }
 .map-progress { display: flex; align-items: center; gap: 14px; margin-bottom: 26px; font: 600 14px/1 var(--display); color: var(--ink-2); max-width: 420px; }

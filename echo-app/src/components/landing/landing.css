@@ -13,7 +13,22 @@
 .wave svg { fill: var(--ink-2); }
 .sheet-body { display: grid; grid-template-columns: minmax(0, 1fr) 224px; padding-top: 36px; background-image: repeating-linear-gradient(to bottom, transparent 0, transparent 35px, var(--line) 35px, var(--line) 36px); }
 .explain { padding: 0 24px; font-size: 19px; line-height: 36px; min-height: 252px; }
-.mark { background-image: linear-gradient(var(--blue), var(--blue)); background-repeat: no-repeat; background-position: 0 92%; background-size: 100% 3px; animation: draw 0.5s ease-out both; animation-delay: var(--d); }
+/* A marked phrase is one pen line under each line it occupies. Without
+   box-decoration-break the background is painted once across the union of the
+   fragments, so a phrase that wraps on a narrow screen gets a single line 92%
+   of the way down the whole span — straight through the text of its first
+   line. `clone` gives every fragment its own box, so each wrapped line carries
+   its own mark. */
+.mark {
+  background-image: linear-gradient(var(--blue), var(--blue));
+  background-repeat: no-repeat;
+  background-position: 0 92%;
+  background-size: 100% 3px;
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+  animation: draw 0.5s ease-out both;
+  animation-delay: var(--d);
+}
 .mark.miss { background-image: linear-gradient(var(--pen), var(--pen)); }
 .ref { font: 700 12px/0 var(--display); vertical-align: super; margin-left: 3px; color: var(--blue); }
 .ref.b { color: var(--pen); }
@@ -81,4 +96,7 @@
   .wave svg { display: none; }
   .lp-formats > div { grid-template-columns: 1fr; gap: 2px; }
   .lp-closing-box { flex-direction: column; align-items: flex-start; padding: 32px 24px; }
+  /* The size also comes from the component's inline prop, so the phone has to
+     claim it with !important — same trick as the corner mascot. */
+  .lp-closing-box .echomark-avatar { width: 84px !important; height: 84px !important; }
 }

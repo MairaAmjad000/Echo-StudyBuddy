@@ -100,6 +100,13 @@ export default function LearningMap() {
                   const left = sections.filter((s) => !doneIds.has(s.id) && s.id !== section.id).length
                   const story = wasDone ? topicUndoneStory(section.title) : topicDoneStory({ title: section.title, allDone: left === 0 })
                   companion.react(story.pose, story.line, story.tone, story.ms)
+                  // Finishing a topic moves the journey on: the panel jumps to
+                  // the next unfinished topic, or to the boss round when this
+                  // was the last one. Un-ticking leaves the panel where it is.
+                  if (!wasDone) {
+                    const next = sections.find((s) => !doneIds.has(s.id) && s.id !== section.id)
+                    setSelected(next ? next.id : 'boss')
+                  }
                 }}
               >
                 {doneIds.has(section.id) ? 'Mark as not done' : 'Mark as done'}

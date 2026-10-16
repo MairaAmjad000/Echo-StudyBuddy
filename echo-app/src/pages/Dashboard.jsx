@@ -9,6 +9,7 @@ import { greeting } from '../lib/format.js'
 import { avatarById } from '../lib/avatars.js'
 import { pickMission, weeklyCounts } from '../lib/stats.js'
 import useDocumentTitle from '../hooks/useDocumentTitle.js'
+import ThemeToggle from '../components/ui/ThemeToggle.jsx'
 import '../styles/pages.css'
 
 // The greeting shown last time, so a fresh page load (which empties the
@@ -55,6 +56,10 @@ export default function Dashboard() {
 
   return (
     <>
+      <div className="dash-toolbar">
+        <ThemeToggle />
+      </div>
+
       <section className="greeting surface">
         <div className="greeting-copy">
           {pic && <img className="greeting-avatar" src={pic.src} alt="" width="72" height="72" />}

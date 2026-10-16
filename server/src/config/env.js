@@ -16,6 +16,21 @@ const envSchema = z.object({
   // the built-in rule-based generator. AI_MODEL defaults to the free-tier Flash.
   AI_API_KEY: z.string().default(''),
   AI_MODEL: z.string().default('gemini-2.5-flash'),
+
+  // Google sign-in (OAuth 2.0 authorization code flow). With both the client id
+  // and secret empty, Google is offered nowhere and the app is email + password
+  // only; the settings page says so instead of showing a button that cannot work.
+  GOOGLE_CLIENT_ID: z.string().default(''),
+  GOOGLE_CLIENT_SECRET: z.string().default(''),
+  // Must match a redirect URI registered on the OAuth client character for
+  // character. Empty means <CLIENT_ORIGIN>/api/auth/google/callback, which is
+  // where the frontend serves the app in production and proxies /api in dev.
+  GOOGLE_REDIRECT_URI: z.string().default(''),
+  // Google's own endpoints. They are only overridden to walk the flow against a
+  // local stub while testing; production never needs to touch them.
+  GOOGLE_AUTH_URL: z.string().url().default('https://accounts.google.com/o/oauth2/v2/auth'),
+  GOOGLE_TOKEN_URL: z.string().url().default('https://oauth2.googleapis.com/token'),
+  GOOGLE_USERINFO_URL: z.string().url().default('https://openidconnect.googleapis.com/v1/userinfo'),
 })
 
 const parsed = envSchema.safeParse(process.env)

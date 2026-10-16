@@ -18,7 +18,7 @@
   stroke-dasharray: 1 16;
 }
 .trail-done {
-  stroke: var(--blue);
+  stroke: #172742;
   stroke-width: 6;
   stroke-linecap: round;
 }
@@ -36,7 +36,7 @@
 /* Open but not started: white disc ringed in blue, a blue dot in the middle */
 .trail-stop.is-current { color: var(--blue); }
 /* Finished: solid blue with the white tick drawn in the component */
-.trail-stop.is-done { color: var(--blue); }
+.trail-stop.is-done { color: var(--blue-dark); }
 /* Still shut: soft fog disc, muted padlock */
 .trail-stop.is-locked { color: var(--ink-2); }
 
@@ -68,6 +68,94 @@
 .is-locked .trail-label { fill: var(--ink-2); }
 .trail-here { font: 700 13px var(--display); fill: var(--blue); }
 
-@media (max-width: 640px) {
-  .trail-label { font-size: 14px; }
+/* The phone journey ------------------------------------------------------------
+   Below 640px the board would shrink its labels into specks, so the trail
+   stands up: cards alternate down either side of a dashed road, and the
+   boss waits on its dark ground at the end. The SVG is sized to the cards'
+   exact pixel step, so the trail always lands on their centres. */
+
+.map-journey {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 4px 0 0;
+}
+.journey-map { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 0; }
+
+.journey-stop {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: center;
+  gap: 12px;
+  width: 82%;
+  min-height: 76px;
+  padding: 10px 14px;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  background: var(--sheet);
+  color: var(--ink);
+  font: inherit;
+  text-align: left;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease, transform 0.15s ease;
+}
+.journey-stop:nth-of-type(odd) { align-self: flex-start; }
+.journey-stop:nth-of-type(even) { align-self: flex-end; }
+.journey-stop:disabled { cursor: default; }
+.journey-stop:not(:disabled):hover,
+.journey-stop:not(:disabled):focus-visible {
+  border-color: var(--blue);
+  transform: translateY(-1px);
+}
+.journey-stop:focus-visible { outline: none; box-shadow: 0 0 0 3px var(--blue-tint); }
+.journey-stop.is-selected { border-color: var(--blue); box-shadow: 0 0 0 3px var(--blue-tint); }
+
+.journey-node {
+  width: 44px;
+  height: 44px;
+  flex: none;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  border: 2.5px solid var(--line);
+  background: var(--fog);
+  color: var(--ink-2);
+  font: 800 1.1rem var(--display);
+}
+.journey-node svg { width: 22px; height: 22px; }
+.journey-node rect { fill: currentColor; }
+.journey-node .tick { fill: none; stroke: #fff; stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; }
+.journey-node path:not(.tick) { fill: none; stroke: currentColor; stroke-width: 2.4; stroke-linecap: round; }
+.journey-node i { width: 12px; height: 12px; border-radius: 50%; background: var(--blue); }
+
+.is-done .journey-node { background: var(--blue); border-color: var(--blue-dark); color: #fff; }
+.is-current .journey-node { background: var(--sheet); border-color: var(--blue); color: var(--blue); }
+
+.journey-title {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  font: 600 0.95rem/1.3 var(--display);
+}
+.is-locked .journey-title { color: var(--ink-2); }
+.journey-here { display: block; margin-top: 3px; font: 700 0.72rem var(--display); color: var(--blue); }
+
+/* The boss stands on its own dark ground at the end of the road. `--ink`
+   flips with the theme, so the band and its text stay paired either way. */
+.journey-stop.is-boss {
+  width: 92%;
+  align-self: center;
+  background: var(--ink);
+  border-color: var(--ink);
+  color: var(--sheet);
+}
+.is-boss .journey-node { background: transparent; border-color: currentColor; color: inherit; }
+.is-boss .journey-title { color: inherit; }
+.is-boss.is-locked .journey-title { color: inherit; opacity: 0.72; }
+
+@media (min-width: 640px) {
+  .map-journey { display: none; }
 }

@@ -1,3 +1,7 @@
+/* The light/dark switch sits above the greeting, right-aligned. The button
+   itself is shared — components/ui/ThemeToggle.jsx and ui.css. */
+.dash-toolbar { display: flex; justify-content: flex-end; margin-bottom: 12px; }
+
 .stat-strip { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); margin: 0; }
 .stat-strip > div { padding: 18px 20px; border-left: 1px solid var(--rule); }
 .stat-strip > div:first-child { border-left: 0; }

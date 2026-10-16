@@ -128,6 +128,11 @@ export default function Settings() {
         <div className="settings">
           <form className="surface settings-block" onSubmit={saveName}>
             <h3>Profile</h3>
+            <p className="muted small">
+              {state.account?.googleLinked
+                ? `Signed in with Google as ${state.account.email}. Your password stays with Google.`
+                : `Signed in as ${state.account?.email} with a password.`}
+            </p>
 
             {/* Instagram-style profile picture: the portrait with a camera badge,
                 tapping it opens the character picker. */}

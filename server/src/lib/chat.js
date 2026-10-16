@@ -9,8 +9,11 @@ import { env } from '../config/env.js'
 
 const API_ROOT = 'https://generativelanguage.googleapis.com/v1beta'
 const TIMEOUT_MS = 45_000
-// Keep the prompt, the material and the history inside a comfortable budget.
-const MAX_CONTEXT_CHARS = 24_000
+// How much of a material goes into one prompt. It matches the 200k characters
+// a material may store and the 2M a request may carry, so chat sees every word
+// the student uploaded rather than a slice of it. Gemini Flash reads far more
+// than this in one call (roughly 50k tokens here).
+const MAX_CONTEXT_CHARS = 200_000
 const MAX_HISTORY = 12
 const MAX_REPLY_TOKENS = 1024
 
@@ -18,15 +21,16 @@ const MAX_REPLY_TOKENS = 1024
 export const chatAvailable = () => !!env.AI_API_KEY
 
 /**
- * The material as plain reference text: the original file text when we kept
- * it, otherwise the generated notes (headings, summaries, bullets, terms).
+ * The generated notes as plain text, for a material whose original file text was
+ * not kept. The headings, the bullets and terms are only part of what the pack
+ * holds, so the flashcards and the quiz questions come along too — they were
+ * written from the material and say far more about it than the headings do.
  */
-export function materialContext(material) {
-  const source = typeof material?.sourceText === 'string' ? material.sourceText.trim() : ''
-  if (source) return source.slice(0, MAX_CONTEXT_CHARS)
-
-  const sections = material?.pack?.sections || []
-  const parts = sections.map((s, i) => {
+function packText(material) {
+  const pack = material?.pack || {}
+  const parts = []
+  const sections = pack.sections || []
+  sections.forEach((s, i) => {
     const lines = [`## ${i + 1}. ${s.title}`]
     for (const p of s.summary || []) lines.push(p)
     for (const g of s.groups || []) {
@@ -34,15 +38,44 @@ export function materialContext(material) {
       for (const item of g.items || []) lines.push(`- ${item}`)
     }
     for (const t of s.terms || []) lines.push(`- ${t.term}: ${t.def}`)
-    return lines.join('\n')
+    for (const k of s.keyPoints || []) if (k.label) lines.push(`- ${k.label}${k.hint ? `: ${k.hint}` : ''}`)
+    parts.push(lines.join('\n'))
   })
-  return parts.join('\n\n').slice(0, MAX_CONTEXT_CHARS)
+
+  if (pack.cards?.length) {
+    parts.push(['## Flashcards', ...pack.cards.map((c) => `Q: ${c.q}\nA: ${c.a}`)].join('\n'))
+  }
+  if (pack.questions?.length) {
+    parts.push([
+      '## Quiz questions',
+      ...pack.questions.map((q) => `Q: ${q.q}\nOptions: ${(q.options || []).join(' | ')}\nAnswer: ${(q.options || [])[q.answer] ?? ''}${q.why ? `\nWhy: ${q.why}` : ''}`),
+    ].join('\n'))
+  }
+  return parts.join('\n\n').trim()
+}
+
+/** The whole material as one string: the student's own text when it was kept, otherwise everything in the generated pack. */
+export function fullText(material) {
+  const source = typeof material?.sourceText === 'string' ? material.sourceText.trim() : ''
+  if (source) return source
+  return packText(material)
+}
+
+/**
+ * The material as reference text for a question. This is the student's own
+ * file, quoted in full: chat can be asked about any part of it, so nothing is
+ * trimmed away from the front. `sourceText` holds up to 200k characters, the
+ * same ceiling the schema enforces when a material is saved.
+ */
+export function materialContext(material) {
+  return fullText(material).slice(0, MAX_CONTEXT_CHARS)
 }
 
 const RULES = `You are Echo, a warm and precise study companion. You are chatting with a student about ONE piece of study material, quoted below.
 
 How to answer:
-- Answer from the material only. It is the source of truth for this conversation.
+- Answer from the material only. It is the source of truth for this conversation, and the whole of it is quoted below.
+- The question may be about ANY part of it: the opening, a definition buried halfway through, or the very last paragraph. Read through the whole quote before deciding it is not covered.
 - If the material does not cover what was asked, say so plainly in one sentence and offer what it does cover. Never invent facts, numbers or names.
 - Be brief and spoken: 2 to 5 short sentences, or a short list when the question asks for steps or a comparison.
 - Quote the material's wording for definitions and key terms.

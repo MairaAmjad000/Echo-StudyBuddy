@@ -6,6 +6,23 @@
     <title>Echo: study from your own notes</title>
     <meta name="description" content="Upload your slides, PDFs or a lecture link. Echo turns them into notes, flashcards and quizzes, then listens while you explain the topic and marks what you missed." />
     <link rel="icon" type="image/svg+xml" href="/strobi-favicon.svg" />
+    <script>
+      // Saved theme, applied before first paint: a dark-mode reload opens dark
+      // instead of flashing light. Same key src/lib/theme.js writes.
+      try {
+        if (localStorage.getItem('echo.theme') === 'dark') document.documentElement.classList.add('dark')
+      } catch (e) {}
+    </script>
+    <style>
+      /* The first paint. The app's own stylesheet arrives with the JS bundle,
+         and the page it lands on is the boot splash — so until then the canvas
+         would be the browser's white and a reload would flash before Echo
+         appears. These are --fog from styles/tokens.css, light and dark, so
+         the splash comes up on exactly the same colour with no shift.
+         color-scheme keeps scrollbars and form controls in the same theme. */
+      html { background: #eef2f6; color-scheme: light; }
+      html.dark { background: #0b1222; color-scheme: dark; }
+    </style>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..900&family=Literata:ital,opsz,wght@0,7..72,400..700;1,7..72,400..700&display=swap" rel="stylesheet" />

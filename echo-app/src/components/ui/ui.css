@@ -124,3 +124,25 @@ html.reduce-motion .bar > i::after {
   border-radius: 6px;
   padding: 8px 10px;
 }
+
+/* The light/dark switch: one round icon button, shared by the dashboard and
+   the landing navbar. The icon shows where it takes you — a moon in light
+   mode, a sun in dark. */
+.theme-toggle {
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  display: grid;
+  place-items: center;
+  background: var(--sheet);
+  border: 1px solid var(--rule);
+  border-radius: 50%;
+  color: var(--ink);
+  cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+}
+.theme-toggle:hover:not(:disabled) {
+  background: var(--blue-tint);
+  border-color: var(--blue);
+  color: var(--blue);
+}

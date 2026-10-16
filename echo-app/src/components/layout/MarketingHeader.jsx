@@ -1,5 +1,6 @@
 import Logo from '../brand/Logo.jsx'
 import Button from '../ui/Button.jsx'
+import ThemeToggle from '../ui/ThemeToggle.jsx'
 import { useApp } from '../../store/AppContext.jsx'
 import './layout.css'
 
@@ -13,6 +14,7 @@ export default function MarketingHeader() {
       <nav aria-label="Main">
         <a href="#features">Features</a>
         <a href="#uploads">What you can upload</a>
+        <ThemeToggle className="top-theme" />
         {signedIn ? (
           <Button to="/app">Open dashboard</Button>
         ) : (

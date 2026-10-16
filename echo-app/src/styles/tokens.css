@@ -33,3 +33,35 @@
   --r-card: 14px;
   --r-panel: 10px;
 }
+
+/* Dark mode. Same design rules as the light palette — fog page, sheets above
+   it, ink text, blue for actions, red pen only for missed — just lifted out of
+   the light: the page goes to a deep navy rather than black, sheets sit
+   clearly above it, and the blue and pen are brightened so small text still
+   reads. Only this block and styles/dark.css carry the theme; every light rule
+   is untouched, so light mode is exactly the one the app ships with.
+   Added: --chip / --chip-fg for the solid navy cards (Echo's bubbles, toasts,
+   the battle arena), which must stay a raised panel instead of turning into
+   the new light ink. */
+html.dark {
+  color-scheme: dark;
+
+  --fog: #0b1222;
+  --sheet: #141d31;
+  --ink: #e7edfa;
+  --ink-2: #a3b1c9;
+  --blue: #6aa2ff;
+  --blue-dark: #8cb8ff;
+  --blue-tint: #1c2b4b;
+  --eye: #7cb2ff;
+  --pen: #ff8b7a;
+  --pen-tint: #3a1d1e;
+  --line: #202c46;
+  --rule: rgba(231, 237, 250, 0.16);
+
+  --chip: #19253f;
+  --chip-fg: #eef2fb;
+  /* A hairline that keeps a floating envelope readable as an object on the
+     page: dark cards on a dark page need an edge, not just a fill. */
+  --chip-ring: rgba(231, 237, 250, 0.16);
+}

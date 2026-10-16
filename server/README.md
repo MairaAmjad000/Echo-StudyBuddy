@@ -15,12 +15,47 @@ npm run dev                 # node --watch, http://localhost:4000
 
 Requires MongoDB running locally (or a `MONGODB_URI` in `.env`).
 
+## Google sign-in
+
+Optional, and off until it is configured. Set `GOOGLE_CLIENT_ID` and
+`GOOGLE_CLIENT_SECRET` and the sign-in page grows a "Continue with Google"
+button; leave them empty and only the email/password form is shown.
+
+1. Google Cloud Console -> **APIs & Services -> Credentials -> Create
+   credentials -> OAuth client ID -> Web application**.
+2. Add a redirect URI for each place the app runs, exactly:
+   `http://localhost:5173/api/auth/google/callback` for development and
+   `https://your-domain/api/auth/google/callback` for production. The `/api`
+   path is the backend, reached through the frontend's origin (Vite proxies it
+   in dev, the reverse proxy does it in production).
+3. Paste the client id and secret into `server/.env`.
+
+How it works, end to end:
+
+- `GET /api/auth/google?next=/app` sets a signed, httpOnly `echo_oauth` cookie
+  holding a random state and the return path, then redirects to Google.
+- `GET /api/auth/google/callback` reads that cookie back, refuses anything whose
+  `state` does not match (so a stranger cannot hand us a code of their own),
+  swaps the code for an access token, and reads the profile.
+- The account is found by Google's subject id first, then by verified email. An
+  existing email/password account signing in with Google is **linked**, not
+  duplicated; a brand-new one is created with a fresh progress record.
+- The browser gets the same httpOnly `echo_session` cookie as a password login,
+  and lands back on `next` — no token ever touches localStorage.
+- Anything that goes wrong comes back as `/login?authError=<reason>` instead of
+  a JSON error page, because both steps are browser navigations.
+- Accounts created this way have no password, so the password form tells that
+  person to use the Google button rather than failing cryptically.
+
 ## API
 
 All routes except `auth` and `health` need `Authorization: Bearer <token>`.
 
 | Method | Route | Purpose |
 | --- | --- | --- |
+| GET | `/api/auth/providers` | Which sign-in methods are configured, e.g. `{ google: true }` |
+| GET | `/api/auth/google` | `?next=/app` — start Google sign-in (redirects) |
+| GET | `/api/auth/google/callback` | Google's return leg; opens the session (redirects) |
 | POST | `/api/auth/signup` | `{ name, email, password }` -> `{ token, user }` |
 | POST | `/api/auth/login` | `{ email, password }` -> `{ token, user }` |
 | GET | `/api/auth/me` | Current user + progress |
@@ -47,6 +82,11 @@ All routes except `auth` and `health` need `Authorization: Bearer <token>`.
 
 - **Auth**: bcrypt (cost from `BCRYPT_ROUNDS`), JWT signed with `JWT_SECRET`.
   Emails are stored lowercase and uniquely indexed. Auth routes are rate limited.
+  Google sign-in lives in `lib/google.js` (no passport): the authorization-code
+  flow, a signed state cookie, and the same session cookie as a password login.
+  `googleId` is unique and sparse, and `passwordHash` is null on Google-only
+  accounts — the two sign-in routes each refuse the other's kind of account with
+  a sentence that says which button to press.
 - **Authorization**: every document query filters by `owner: req.user._id`, so
   users can only ever see their own data.
 - **XP and achievements** are computed on the server (`services/progress.service.js`),
@@ -56,10 +96,13 @@ All routes except `auth` and `health` need `Authorization: Bearer <token>`.
   same `{ sections, cards, questions }` shape. Swap the generator body for an
   LLM call without touching anything else.
 - **AI**: with `AI_API_KEY` set, `lib/ai.js` builds study packs with Gemini and
-  `lib/chat.js` answers Chat with Echo questions. Chat keeps the material's
-  original text (`sourceText`, excluded from list responses) as the model's
-  reference and falls back to the generated notes; without a key the chat route
-  returns 503 and packs fall back to the rule-based generator.
+  `lib/chat.js` answers Chat with Echo questions. Chat quotes the material's
+  whole original text (`sourceText`, excluded from list responses) — up to the
+  200k characters a material may store — so a question can be about any part of
+  it, not just the opening; when no text was kept it falls back to everything in
+  the generated pack (notes, flashcards and quiz answers). Without a key the
+  chat route returns 503 and packs fall back to the rule-based generator. A 429
+  from Gemini is reported as an exhausted quota, not as a failed answer.
 - **Chat history** is held by the page, not the database: the client sends the
   conversation back with each question, the server keeps the last 12 turns and
   never stores the transcript. The route is rate limited (20 questions/minute).

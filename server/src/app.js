@@ -12,6 +12,12 @@ import { AppError } from './lib/AppError.js'
 export function createApp() {
   const app = express()
 
+  // In production the app sits behind a reverse proxy (Vercel and every other
+  // host), so the real client address only arrives in X-Forwarded-For. Without
+  // this the rate limiter would key every request to the proxy's own address
+  // and lock out all users together.
+  if (isProd) app.set('trust proxy', 1)
+
   app.use(helmet())
   app.use(cors({ origin: env.CLIENT_ORIGIN, credentials: true }))
   app.use(cookieParser())

@@ -1,0 +1,176 @@
+/* Dark mode, part 2: the places where a theme token is not enough because the
+   rule paints a colour literally.
+
+   Two conventions carry the whole file:
+   - **Solid navy cards** (Echo's bubbles, the toasts, the battle arena) keep
+     being a raised navy panel — `--chip` — instead of following `--ink`, which
+     is light text now and would turn them into pale blocks with pale text on
+     them.
+   - **Blue and pen surfaces** (primary button, the student's chat bubble, error
+     toasts) take dark ink, because the dark palette brightens those hues to
+     work as text on a dark page and white would no longer read on them.
+
+   Every selector is scoped to `html.dark`, which outranks the unscoped rules
+   in the component stylesheets whatever order they load in — light mode is
+   left exactly as it is. --chip / --chip-fg are defined in styles/tokens.css. */
+
+/* --- solid navy chips: Echo's bubbles ------------------------------------ */
+
+html.dark .greeting-say,
+html.dark .greeting-say-warn,
+html.dark .companion-note,
+html.dark .companion-note-warn,
+html.dark .toast {
+  background: var(--chip);
+  color: var(--chip-fg);
+}
+html.dark .greeting-say::after,
+html.dark .greeting-say-warn::after {
+  border-left-color: var(--chip);
+}
+html.dark .companion-note::after {
+  border-top-color: var(--chip);
+}
+
+/* An envelope on a dark page needs an edge, not just a fill — otherwise the
+   card and the page read as one shape. The ring is an inset shadow rather than
+   a border so nothing moves: the tail hangs off the padding box, and a real
+   border would open a hairline gap between card and tail. */
+html.dark .companion-note,
+html.dark .greeting-say,
+html.dark .greeting-say-warn,
+html.dark .greeting-say-error,
+html.dark .toast,
+html.dark .arena {
+  box-shadow: inset 0 0 0 1px var(--chip-ring);
+}
+
+/* The tone variants keep their meaning: blue for a win, red for a miss. */
+html.dark .greeting-say-error,
+html.dark .companion-note-error {
+  background: #c1402d;
+  color: #fff;
+}
+html.dark .greeting-say-error::after {
+  border-left-color: #c1402d;
+}
+html.dark .companion-note-error::after {
+  border-top-color: #c1402d;
+}
+html.dark .companion-note-success {
+  background: var(--blue);
+  color: #0b1222;
+}
+html.dark .companion-note-success::after {
+  border-top-color: var(--blue);
+}
+
+/* --- blue and pen surfaces that carry their own text --------------------- */
+
+html.dark .btn-primary,
+html.dark .avatar-tick,
+html.dark .chat-turn-user .chat-bubble {
+  color: #0b1222;
+}
+html.dark .btn-primary:hover:not(:disabled) {
+  color: #0b1222;
+}
+html.dark .toast-error {
+  background: #c1402d;
+  color: #fff;
+}
+
+/* --- the battle arena stays the navy card it is --------------------------- */
+
+html.dark .arena {
+  background: var(--chip);
+  color: var(--chip-fg);
+}
+
+/* --- initial circles flip instead: light disc, dark letter ---------------- */
+
+html.dark .avatar,
+html.dark .profile-pic-fallback {
+  background: var(--ink);
+  color: var(--sheet);
+}
+
+/* --- tracks, wells and tinted washes -------------------------------------- */
+
+html.dark .bar {
+  background: rgba(231, 237, 250, 0.14);
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.35);
+}
+html.dark .error-details pre {
+  background: #0f1829;
+  border-color: rgba(231, 237, 250, 0.18);
+}
+
+/* --- hovers: a light wash instead of a dark one --------------------------- */
+
+html.dark .btn-quiet:hover:not(:disabled),
+html.dark .btn-google:hover:not(:disabled),
+html.dark .nav-link:hover {
+  background: rgba(231, 237, 250, 0.08);
+}
+
+/* --- form fields: keep the shape, drop the heavy ink outline -------------- */
+
+html.dark .field input,
+html.dark .field select,
+html.dark .field textarea {
+  border-color: rgba(231, 237, 250, 0.38);
+}
+
+/* --- dim overlays and shadows still have to read against a dark page ------- */
+
+html.dark .confirm-backdrop,
+html.dark .picker-backdrop {
+  background: rgba(4, 8, 18, 0.72);
+}
+html.dark .sheet,
+html.dark .auth-card {
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.05), 0 28px 40px -28px rgba(0, 0, 0, 0.75);
+}
+html.dark .confirm-card {
+  box-shadow: 0 30px 60px -20px rgba(0, 0, 0, 0.75);
+}
+html.dark .chat-rail-menu {
+  box-shadow: 0 18px 36px -18px rgba(0, 0, 0, 0.7);
+}
+html.dark .chat-input {
+  box-shadow: 0 14px 30px -20px rgba(0, 0, 0, 0.7);
+}
+html.dark .chat-rail,
+html.dark .sidebar {
+  box-shadow: 0 24px 48px -24px rgba(0, 0, 0, 0.7);
+}
+
+/* --- printing comes out on paper, so the light palette returns ------------ */
+
+@media print {
+  html.dark {
+    color-scheme: light;
+    --fog: #ffffff;
+    --sheet: #ffffff;
+    --ink: #14213d;
+    --ink-2: #4a5a72;
+    --blue: #1f5fe0;
+    --blue-dark: #1749b5;
+    --blue-tint: #e1eafa;
+    --eye: #5ca2ff;
+    --pen: #c8321f;
+    --pen-tint: #f8e2de;
+    --line: #d6e2f0;
+    --rule: rgba(20, 33, 61, 0.16);
+    --chip: #14213d;
+    --chip-fg: #eaf0fa;
+  }
+  html.dark .arena,
+  html.dark .greeting-say,
+  html.dark .companion-note,
+  html.dark .toast {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+}

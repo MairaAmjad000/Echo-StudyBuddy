@@ -43,7 +43,14 @@ function normalizeProgress(progress) {
 
 function normalizeUser(user) {
   return user
-    ? { name: user.name, email: user.email, avatar: user.avatar || null, createdAt: user.createdAt || Date.now() }
+    ? {
+        name: user.name,
+        email: user.email,
+        avatar: user.avatar || null,
+        // How this account signs in, so settings can say it plainly.
+        googleLinked: Boolean(user.googleLinked),
+        createdAt: user.createdAt || Date.now(),
+      }
     : null
 }
 

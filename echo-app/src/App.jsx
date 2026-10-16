@@ -56,6 +56,30 @@ function RequireAccount({ children }) {
   return <Navigate to="/signup" replace state={{ from: location.pathname, reason: sawApp() ? 'expired' : undefined }} />
 }
 
+// The wake splash plays once per real page load. Refreshing the front page
+// greets you with Echo waking up, while hopping back here through a link
+// goes straight to the page — module state resets only on a true reload.
+let landingSplashDone = false
+
+/** The landing page gets the same splash as the app: a refresh of the front
+ * page wakes Echo first instead of cutting straight to the marketing page.
+ * The splash always finishes before the page takes over, and the page works
+ * whether or not the server answered the boot check. */
+function LandingWithSplash() {
+  const { booting } = useApp()
+  const [splashDone, setSplashDone] = useState(landingSplashDone)
+  if (splashDone) return <Landing />
+  return (
+    <BootSplash
+      ready={!booting}
+      onDone={() => {
+        landingSplashDone = true
+        setSplashDone(true)
+      }}
+    />
+  )
+}
+
 /** Echo is the companion: a live avatar that reads the route and the user's
  * actions and changes its face and pose to match. Every page renders it
  * through <Companion />, which also owns the speech notes. */
@@ -82,7 +106,7 @@ export default function App() {
       <ScrollToTop />
       <RouteGuide />
       <Routes>
-        <Route path="/" element={<Landing />} />
+        <Route path="/" element={<LandingWithSplash />} />
         <Route path="/signup" element={<Auth mode="signup" />} />
         <Route path="/login" element={<Auth mode="login" />} />
         <Route path="/app" element={<RequireAccount><AppShell /></RequireAccount>}>
