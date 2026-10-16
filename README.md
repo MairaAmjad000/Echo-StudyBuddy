@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="echo-app/public/logo.png" alt="Echo, the study companion" width="170" />
+<img src="echo-app/public/echo.png" alt="Echo, the study companion" width="150" />
 
 # Echo
 
@@ -30,8 +30,6 @@ You drop in a lecture PDF, a slide deck, a Word file, a plain-text export or a Y
 That last one is the point of the whole thing. **Teach Echo** listens while you explain a topic out loud, checks your explanation against the key points of that section, and tells you exactly which ones you skipped. If you cannot say it out loud, you do not know it yet — and now something is keeping score.
 
 Everything is tied into a single progress record: XP per action, levels, streaks, five performance attributes and nine achievements. Every number is computed on the server from your real activity, so the levels mean something.
-
-<img src="echo-app/public/emotionAndPoses/wave.png" alt="" width="72" /> <img src="echo-app/public/emotionAndPoses/study.png" alt="" width="72" /> <img src="echo-app/public/emotionAndPoses/thinking.png" alt="" width="72" /> <img src="echo-app/public/emotionAndPoses/happy.png" alt="" width="72" /> <img src="echo-app/public/emotionAndPoses/surprised.png" alt="" width="72" /> <img src="echo-app/public/emotionAndPoses/excited.png" alt="" width="72" />
 
 Echo is the companion that lives on every page: a small avatar that reads the route you are on and what you just did, and reacts — cheering when a topic is finished, thinking while a pack is generated, sympathetic when a quiz goes badly. Sixteen poses, one for each mood the app can put it in.
 
@@ -279,7 +277,3 @@ Leave `VITE_API_URL` unset. It exists only as an escape hatch for running the fr
 ## Author
 
 Built by **Maira Amjad** — [@MairaAmjad000](https://github.com/MairaAmjad000).
-
-<div align="center">
-<img src="echo-app/public/emotionAndPoses/winking.png" alt="Echo winking" width="90" />
-</div>
