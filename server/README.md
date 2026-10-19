@@ -71,7 +71,9 @@ How it works, end to end:
 
 ## API
 
-All routes except `auth` and `health` need `Authorization: Bearer <token>`.
+All routes except `auth` and `health` need a session: the httpOnly `echo_session`
+cookie the browser sends automatically, or `Authorization: Bearer <token>` for a
+scripted client.
 
 | Method | Route | Purpose |
 | --- | --- | --- |
@@ -89,6 +91,15 @@ All routes except `auth` and `health` need `Authorization: Bearer <token>`.
 | PATCH | `/api/materials/:id` | Attach a `transcript` to a needs-text material |
 | DELETE | `/api/materials/:id` | Delete a material |
 | POST | `/api/chat` | Chat with Echo: `{ materialId, messages: [{ role: "user" \| "echo", content }] }` -> `{ reply }` (Gemini, grounded in that material) |
+| GET | `/api/chat/sessions` | Saved conversations, newest first |
+| GET / DELETE | `/api/chat/sessions/:id` | One conversation, or forget it |
+| GET / POST | `/api/podcasts` | List episodes, or write one from a material (Gemini, with a built-in writer as fallback) |
+| GET / DELETE | `/api/podcasts/:id` | One episode with its script, or delete it |
+| PATCH | `/api/podcasts/:id` | Save the turn the student stopped at |
+| GET | `/api/podcasts/:id/audio/:index` | Record one turn as MP3 (ETag + `private, immutable` cache) |
+| GET / POST | `/api/whiteboard` | List saved lessons, or teach a typed/photographed question |
+| GET / DELETE | `/api/whiteboard/:id` | One lesson with every step, or delete it |
+| GET | `/api/whiteboard/:id/audio/:index` | Record one step as MP3 in the podcast's Echo voice |
 | GET | `/api/progress` | Full progress state |
 | GET | `/api/progress/summary` | Streak, level, weekly counts, mission, attributes, XP buckets |
 | POST | `/api/progress/quiz` | Record a quiz result (XP awarded server-side) |
@@ -128,6 +139,12 @@ All routes except `auth` and `health` need `Authorization: Bearer <token>`.
 - **Chat history** is held by the page, not the database: the client sends the
   conversation back with each question, the server keeps the last 12 turns and
   never stores the transcript. The route is rate limited (20 questions/minute).
+- **Narration** (podcasts and the whiteboard teacher) is recorded on demand by
+  Microsoft Edge's free neural voices via `msedge-tts` in `lib/tts.js`. No key
+  is needed, but the host must allow outbound WebSocket traffic to Microsoft —
+  a host that blocks WSS answers 503 on the audio route. Audio is never stored:
+  each turn is a pure function of its text and voice, so it is cached by the
+  browser with an ETag instead of on disk.
 - **Validation**: zod schemas in `validation/schemas.js`; bad input returns 400
   with the first issue.
 - **Errors**: `AppError` carries a status + safe message; unexpected errors are
@@ -135,9 +152,8 @@ All routes except `auth` and `health` need `Authorization: Bearer <token>`.
 
 ## Wiring the frontend
 
-The frontend's `src/store/AppContext.jsx` currently hydrates from localStorage.
-To connect it: replace the `load()`/save effect with API calls — `GET /api/auth/me`
-on boot with the stored token, then `POST /api/progress/*` for each action
-instead of mutating local state. The response shapes match the frontend's state
-fields (`sectionsDone`, `cardsEasy`, `quizLog`, `teachLog`, `xp`, `xpLog`,
-`studyDays`, `activity`, `achievements`, `lastStudied`), so hydration is direct.
+Already wired. `echo-app/src/store/AppContext.jsx` hydrates from
+`GET /api/auth/me` on boot and every action goes through `echo-app/src/lib/api.js`
+— nothing is kept in localStorage. In development Vite proxies `/api` to this
+server on `:4000`; in production the frontend proxies `/api` to the deployed API,
+which keeps the session cookie first-party.

@@ -7,6 +7,8 @@ import authRoutes from './routes/auth.routes.js'
 import materialsRoutes from './routes/materials.routes.js'
 import progressRoutes from './routes/progress.routes.js'
 import chatRoutes from './routes/chat.routes.js'
+import podcastRoutes from './routes/podcast.routes.js'
+import whiteboardRoutes from './routes/whiteboard.routes.js'
 import { AppError } from './lib/AppError.js'
 
 export function createApp() {
@@ -28,6 +30,8 @@ export function createApp() {
   app.use('/api/materials', materialsRoutes)
   app.use('/api/progress', progressRoutes)
   app.use('/api/chat', chatRoutes)
+  app.use('/api/podcasts', podcastRoutes)
+  app.use('/api/whiteboard', whiteboardRoutes)
 
   // Unknown API routes are a 404, not a hang.
   app.use('/api', (req, res, next) => next(new AppError(404, `No route for ${req.method} ${req.originalUrl}`)))

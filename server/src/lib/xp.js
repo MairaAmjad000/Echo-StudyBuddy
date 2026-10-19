@@ -6,6 +6,7 @@ export const XP = {
   quizWin: 20,
   cardEasy: 5,
   cardHard: 2,
+  podcast: 20,
   teach: (score) => Math.round(score / 2),
 }
 

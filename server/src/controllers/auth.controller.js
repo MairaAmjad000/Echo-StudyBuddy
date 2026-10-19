@@ -2,6 +2,9 @@ import bcrypt from 'bcryptjs'
 import { User } from '../models/User.js'
 import { Progress } from '../models/Progress.js'
 import { Material } from '../models/Material.js'
+import { ChatSession } from '../models/ChatSession.js'
+import { Podcast } from '../models/Podcast.js'
+import { WhiteboardLesson } from '../models/WhiteboardLesson.js'
 import { signToken } from '../lib/jwt.js'
 import { env, isProd, JWT_EXPIRES_MS } from '../config/env.js'
 import { AppError } from '../lib/AppError.js'
@@ -224,8 +227,13 @@ export async function updateMe(req, res, next) {
 
 /** Delete the account and everything that belongs to it. */
 export async function deleteAccount(req, res) {
-  await Material.deleteMany({ owner: req.user._id })
-  await Progress.deleteOne({ owner: req.user._id })
+  await Promise.all([
+    Material.deleteMany({ owner: req.user._id }),
+    ChatSession.deleteMany({ owner: req.user._id }),
+    Podcast.deleteMany({ owner: req.user._id }),
+    WhiteboardLesson.deleteMany({ owner: req.user._id }),
+    Progress.deleteOne({ owner: req.user._id }),
+  ])
   await req.user.deleteOne()
   res.clearCookie(SESSION_COOKIE, cookieOpts())
   res.json({ ok: true })

@@ -35,6 +35,12 @@ export const ACHIEVEMENTS = [
     progress: (s) => [Object.values(s.cardsEasy || {}).reduce((n, ids) => n + ids.length, 0), 25],
   },
   {
+    id: 'first-podcast',
+    title: 'Studio session',
+    text: 'Record a podcast episode from one of your materials.',
+    progress: (s) => [s.activity.filter((a) => a.type === 'podcast').length, 1],
+  },
+  {
     id: 'teach-80',
     title: 'Good teacher',
     text: 'Score 80% or more in Teach Echo.',
