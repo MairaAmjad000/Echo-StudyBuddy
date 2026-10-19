@@ -8,7 +8,8 @@ import './chat.css'
  * a small menu, and Delete there forgets the conversation for good. The menu
  * closes on Escape, on a click anywhere else, when another row is picked, and
  * once the delete has run. It flips above its button when the rail is scrolled
- * so far down that a menu below would be cut off.
+ * so far down that a menu below would be cut off — but only when there is real
+ * room above it, because the top row has none and must keep its menu below.
  */
 export default function ChatHistory({ chats, activeId, onOpen, onDelete, onNew, busy }) {
   // { id, up } for the one open menu, or null.
@@ -44,9 +45,17 @@ export default function ChatHistory({ chats, activeId, onOpen, onDelete, onNew, 
       return
     }
     const list = listRef.current
-    // A menu is ~76px tall with its gap: if that much room is not below the
-    // button, open upward instead of into the rail's bottom edge.
-    const up = list ? e.currentTarget.getBoundingClientRect().bottom + 76 > list.getBoundingClientRect().bottom : false
+    // A menu is ~76px tall with its gap. Flip it up only when it does not fit
+    // below *and* there is that much room above: with few chats the list box
+    // is barely taller than its rows, and the top row has no room above at all
+    // — flipping there would push the menu over the rail's header.
+    let up = false
+    if (list) {
+      const btn = e.currentTarget.getBoundingClientRect()
+      const box = list.getBoundingClientRect()
+      const MENU = 76
+      up = box.bottom - btn.bottom < MENU && btn.top - box.top >= MENU
+    }
     setMenu({ id, up })
   }
 

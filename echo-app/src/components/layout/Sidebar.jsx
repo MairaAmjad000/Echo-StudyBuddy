@@ -19,6 +19,8 @@ const GROUPS = [
     title: 'Tools',
     items: [
       { to: '/app/chat', label: 'Chat with Echo' },
+      { to: '/app/whiteboard', label: 'Whiteboard' },
+      { to: '/app/podcast', label: 'Podcast' },
       { to: '/app/notes', label: 'Smart Notes' },
       { to: '/app/flashcards', label: 'Flashcards' },
       { to: '/app/quiz', label: 'Quiz Arena' },

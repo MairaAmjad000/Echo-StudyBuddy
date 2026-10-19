@@ -1,7 +1,7 @@
 import { timeAgo } from '../../lib/format.js'
 import './dashboard.css'
 
-const KIND = { upload: 'Notes', link: 'Link', quiz: 'Quiz', teach: 'Teach', cards: 'Cards', topic: 'Topic' }
+const KIND = { upload: 'Notes', link: 'Link', quiz: 'Quiz', teach: 'Teach', cards: 'Cards', topic: 'Topic', podcast: 'Podcast' }
 
 export default function ActivityList({ items }) {
   return (

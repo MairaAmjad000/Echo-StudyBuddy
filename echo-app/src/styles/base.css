@@ -6,6 +6,16 @@
 html {
   scroll-behavior: smooth;
 }
+@media (max-width: 900px) {
+  /* Below this width the pages flow and the *document* scrolls. Reserve the
+     scrollbar gutter so a classic scrollbar appearing or disappearing never
+     resizes the viewport: without it, content crossing the viewport height
+     (sending the first chat message shrinks the welcome screen) widens the
+     page by a scrollbar and kicks every right-aligned thing sideways — the
+     thread visibly jumped right and back on send. Real phones use overlay
+     scrollbars, where this reserves nothing. */
+  html { scrollbar-gutter: stable; }
+}
 body {
   margin: 0;
   background: var(--fog);

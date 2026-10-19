@@ -47,3 +47,38 @@ export const api = {
   patch: (path, body) => request(path, { method: 'PATCH', body }),
   del: (path) => request(path, { method: 'DELETE' }),
 }
+
+/**
+ * One turn of a podcast episode.
+ *
+ * It is the only response in the app that is not JSON: MP3 bytes, played from a
+ * blob the player keeps in memory. Same session cookie as every other call, so
+ * it needs the same credentials, and the same error shape when the server says
+ * no — a rate-limited voice answers 503 with a line worth reading.
+ */
+export const audioUrl = (podcastId, index) => `${API}/api/podcasts/${podcastId}/audio/${index}`
+
+/**
+ * One narrated step of a whiteboard lesson. It is recorded on demand by the
+ * same free Edge voice as the podcast, so the teacher and Echo sound alike.
+ */
+export const whiteboardAudioUrl = (lessonId, index) => `${API}/api/whiteboard/${lessonId}/audio/${index}`
+
+export async function fetchAudio(url) {
+  let res
+  try {
+    res = await fetch(url, { credentials: 'include' })
+  } catch {
+    throw new ApiError(0, 'Cannot reach the server. Is the backend running?')
+  }
+  if (res.ok) return res
+
+  let message = `Request failed (${res.status})`
+  try {
+    const data = await res.json()
+    if (data?.error) message = data.error
+  } catch {
+    /* not a JSON error body */
+  }
+  throw new ApiError(res.status, message)
+}

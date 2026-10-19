@@ -6,11 +6,19 @@
     <title>Echo: study from your own notes</title>
     <meta name="description" content="Upload your slides, PDFs or a lecture link. Echo turns them into notes, flashcards and quizzes, then listens while you explain the topic and marks what you missed." />
     <link rel="icon" type="image/svg+xml" href="/strobi-favicon.svg" />
+    <script>
+      // Saved theme, applied before first paint: a dark-mode reload opens dark
+      // instead of flashing light. Same key src/lib/theme.js writes.
+      try {
+        if (localStorage.getItem('echo.theme') === 'dark') document.documentElement.classList.add('dark')
+      } catch (e) {}
+    </script>
+    <style>html{--lightningcss-light:initial;--lightningcss-dark: ;color-scheme:light;background:#eef2f6}html.dark{--lightningcss-light: ;--lightningcss-dark:initial;color-scheme:dark;background:#0b1222}</style>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..900&family=Literata:ital,opsz,wght@0,7..72,400..700;1,7..72,400..700&display=swap" rel="stylesheet" />
-    <script type="module" crossorigin src="/assets/index-z1VmuKbG.js"></script>
-    <link rel="stylesheet" crossorigin href="/assets/index-C2kJbDFt.css">
+    <script type="module" crossorigin src="/assets/index-DjGgrt04.js"></script>
+    <link rel="stylesheet" crossorigin href="/assets/index-0l91ayWJ.css">
   </head>
   <body>
     <div id="root"></div>

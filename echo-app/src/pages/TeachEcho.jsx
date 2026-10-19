@@ -31,10 +31,12 @@ export default function TeachEcho() {
   // from the section's own content so a good explanation is never refused.
   const keyPoints = keyPointsFor(topic)
 
-  // While recording, the transcript fills the box.
+  // The transcript fills the box. It also has to fill it *after* recording
+  // stops: stopping folds the not-yet-committed words in, and the student must
+  // see them here — that box is what gets scored.
   useEffect(() => {
-    if (speech.listening) setText(speech.transcript)
-  }, [speech.transcript, speech.listening])
+    setText(speech.transcript)
+  }, [speech.transcript])
 
   // Echo listens along with you while recording; a speech error confuses him.
   useEffect(() => {

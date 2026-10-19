@@ -268,6 +268,60 @@ export function AppProvider({ children }) {
         return 'ok'
       },
 
+      /**
+       * Podcast with Echo. The episodes are the account's own recordings; the
+       * audio itself is fetched turn by turn by the player (see lib/api.js),
+       * never through here.
+       */
+      async listPodcasts() {
+        return api.get('/api/podcasts')
+      },
+      async createPodcast({ materialId, sectionId, preset, length }) {
+        const data = await api.post('/api/podcasts', { materialId, sectionId: sectionId || undefined, preset, length })
+        adopt(data)
+        return data.episode
+      },
+      async loadPodcast(id) {
+        return api.get(`/api/podcasts/${id}`)
+      },
+      async deletePodcast(id) {
+        await api.del(`/api/podcasts/${id}`)
+        return 'ok'
+      },
+      async savePodcastPosition(id, index) {
+        try {
+          await api.patch(`/api/podcasts/${id}`, { index })
+        } catch {
+          // Where a student stopped is a nicety: the next turn tries again.
+        }
+      },
+
+      /**
+       * Whiteboard Teacher. A lesson is generated once (typed question or
+       * photo) and stored, so reopening it from the rail costs no AI call. The
+       * image is a compressed data URL from lib/image.js, never a file upload.
+       */
+      async listWhiteboardLessons() {
+        const { lessons } = await api.get('/api/whiteboard')
+        return lessons
+      },
+      async createWhiteboardLesson({ question, image, subject, materialId }) {
+        const data = await api.post('/api/whiteboard', {
+          question: question || '',
+          image: image || undefined,
+          subject: subject || '',
+          materialId: materialId || '',
+        })
+        return data.lesson
+      },
+      async loadWhiteboardLesson(id) {
+        return api.get(`/api/whiteboard/${id}`)
+      },
+      async deleteWhiteboardLesson(id) {
+        await api.del(`/api/whiteboard/${id}`)
+        return 'ok'
+      },
+
       async updateSettings(patch) {
         applyOptimistic((s) => ({ ...s, settings: { ...s.settings, ...patch } }))
         try {

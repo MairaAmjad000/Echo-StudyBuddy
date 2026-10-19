@@ -27,12 +27,12 @@ const NO_MASCOT_PATHS = ['/login', '/signup', '/app', '/app/materials', '/app/ch
 
 // Pages where the floating mascot only makes sense once a course exists:
 // with nothing loaded there is nothing to help with, so the corner stays free.
-const NO_COURSE_PATHS = ['/app/map', '/app/notes', '/app/flashcards', '/app/quiz', '/app/teach']
+const NO_COURSE_PATHS = ['/app/map', '/app/notes', '/app/flashcards', '/app/quiz', '/app/teach', '/app/podcast']
 
 // Study pages where Echo speaks only about what is on screen. His own
 // milestone chatter is held back on these so it never covers the material or
 // the numbers the student is reading.
-const FOCUS_PATHS = ['/app/map', '/app/notes', '/app/flashcards', '/app/quiz', '/app/teach', '/app/performance']
+const FOCUS_PATHS = ['/app/map', '/app/notes', '/app/flashcards', '/app/quiz', '/app/teach', '/app/performance', '/app/podcast']
 
 // The pose each route maps to, so Echo mirrors what the user is doing.
 // All names must exist in strobi.avatar.ts's animations.
@@ -48,6 +48,7 @@ const ROUTE_MAPS = {
   '/app/quiz': 'excited',
   '/app/teach': 'listening',
   '/app/chat': 'listening',
+  '/app/podcast': 'listening',
   '/app/performance': 'proud',
   '/app/achievements': 'celebrate',
   '/app/settings': 'idle',

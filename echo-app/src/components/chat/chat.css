@@ -203,6 +203,8 @@
   padding: 6px 4px 22px;
   min-height: 0;
   overflow-y: auto;
+  /* Threads never pan sideways: the row may never be wider than the log. */
+  overflow-x: hidden;
   scroll-behavior: smooth;
   /* ChatGPT-style: scroll only when the thread outgrows the window, and keep
      the rail out of sight — wheel, touch and keyboard all still scroll. */
@@ -225,6 +227,9 @@
 }
 .chat-turn-user .chat-bubble { background: var(--blue); color: #fff; border-bottom-right-radius: 3px; }
 .chat-turn-echo .chat-bubble { background: var(--blue-tint); color: var(--ink); border-bottom-left-radius: 3px; }
+/* Echo's rows also carry the 38px mark plus its gap, so their bubble must
+   leave room for it — a plain percentage would push the row past the log. */
+.chat-turn-echo .chat-bubble { max-width: min(82%, calc(100% - 50px), 700px); }
 
 /* Echo is thinking: three dots, no spinner noise. */
 .chat-typing { display: flex; gap: 5px; align-items: center; padding: 14px 16px; background: var(--blue-tint); border-radius: var(--r-panel); }
@@ -331,17 +336,42 @@
 }
 
 @media (max-width: 900px) {
-  /* Stacked layout: back to normal flow, where the page scrolls as pages do. */
-  .chat-page { height: auto; min-height: calc(100vh - 120px); min-height: calc(100dvh - 120px); overflow: visible; }
+  /* Stacked layout: back to normal flow, where the page scrolls as pages do.
+     The page never pans sideways — the gutter rule in base.css keeps the
+     viewport width constant, this clips anything that still tries. */
+  .chat-page { height: auto; min-height: calc(100vh - 120px); min-height: calc(100dvh - 120px); overflow: visible; overflow-x: clip; }
   .chat-shell { grid-template-columns: 1fr; min-height: 0; }
-  .chat-rail { max-height: 264px; }
+  /* A definite height, not just a cap: with one or two chats the rail would
+     shrink to its rows, leaving a menu no room to open below them. */
+  .chat-rail { height: 264px; }
   .chat { min-height: 420px; }
   /* No hover on touch: keep the ⋮ visible. */
   .chat-rail-more { opacity: 1; }
+
+  /* The head stacks cleanly: the material across the top, then the note and
+     the history button on one tidy row instead of wrapping at odd angles. */
+  .chat-head { flex-direction: column; align-items: stretch; gap: 10px; }
+  .chat-head .field { width: 100%; max-width: none; min-width: 0; }
+  .chat-head-side { width: 100%; justify-content: space-between; flex-wrap: nowrap; gap: 10px; }
+  .chat-head-note { flex: 1 1 auto; min-width: 0; max-width: none; text-align: left; }
+
+  /* The composer stays under the thumb while the page scrolls: pinned to the
+     bottom with the page's own colour behind it (sticky, not fixed, so it
+     leaves with the conversation when the student scrolls past it). */
+  .chat-compose {
+    position: sticky;
+    bottom: 0;
+    background: var(--fog);
+    padding-bottom: calc(6px + env(safe-area-inset-bottom, 0px));
+  }
 }
 
 @media (max-width: 700px) {
   .chat { min-height: 380px; }
-  .chat-log { padding: 18px; }
-  .chat-bubble { max-width: 86%; }
+  /* Phone rhythm: tighter thread, slightly smaller type, bubbles that still
+     leave room for Echo's mark. */
+  .chat-log { padding: 16px; gap: 14px; }
+  .chat-turn { gap: 10px; }
+  .chat-bubble { max-width: 86%; padding: 12px 15px; font-size: 16px; line-height: 1.6; }
+  .chat-turn-echo .chat-bubble { max-width: min(86%, calc(100% - 48px)); }
 }

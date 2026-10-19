@@ -37,9 +37,12 @@ export default function AppShell() {
         <Sidebar />
       </aside>
 
-      {/* Chat with Echo is a two-column workspace: it gets the wider canvas so
-          the history rail never squeezes the conversation. */}
-      <main className={`shell-main${pathname === '/app/chat' ? ' shell-main-wide' : ''}`} id="main">
+      {/* Chat and the Whiteboard are two-column workspaces: they get the wider
+          canvas so a history rail never squeezes the main surface. */}
+      <main
+        className={`shell-main${pathname === '/app/chat' || pathname === '/app/whiteboard' ? ' shell-main-wide' : ''}`}
+        id="main"
+      >
         <ErrorBoundary key={pathname}>
           <Outlet />
         </ErrorBoundary>

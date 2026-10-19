@@ -1014,6 +1014,48 @@ export function chatErrorStory(message = '') {
   return null
 }
 
+/**
+ * Podcast with Echo: the first visit to an empty page, the moment an episode has
+ * been recorded, and the end of one.
+ */
+export function podcastStory() {
+  return {
+    key: 'podcast-first',
+    pose: 'listening',
+    line: pickLine('podcast-first', [
+      'Put the headphones on: I can talk you through this one instead of you reading it.',
+      'This is my favourite way to revise — I talk, you walk. Pick a material and I will start.',
+      'Two voices, one material, no notes in front of you. Choose what we record.',
+    ]),
+    tone: 'info',
+    ms: 8000,
+  }
+}
+
+export function podcastReadyStory({ minutes, turns }) {
+  return {
+    key: 'podcast-ready',
+    pose: 'celebrate',
+    line: `Episode recorded: ${turns} turns, about ${minutes} minutes. Play it anywhere.`,
+    tone: 'success',
+    ms: 7000,
+  }
+}
+
+export function podcastVoiceStory() {
+  return {
+    key: 'podcast-done',
+    pose: 'proud',
+    line: pickLine('podcast-done', [
+      'That is the whole episode. Say the three words you remember out loud before you close this page.',
+      'Finished. If you can still explain the first topic, it went in.',
+      'End of the episode. The flashcards are waiting whenever you are ready.',
+    ]),
+    tone: 'success',
+    ms: 8000,
+  }
+}
+
 /** Leaving, resetting, and the quiet moments around them. */
 export function signOutStory() {
   return { key: 'bye', pose: 'sad', line: 'See you tomorrow. I will keep your streak warm.', tone: 'info', ms: 6000 }

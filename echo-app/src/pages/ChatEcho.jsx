@@ -200,7 +200,6 @@ export default function ChatEcho() {
             onChange={setDraft}
             onSend={send}
             busy={busy}
-            disabled={busy}
             hint="Enter sends, Shift+Enter adds a line."
           />
         </section>

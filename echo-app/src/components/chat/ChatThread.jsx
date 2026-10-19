@@ -11,10 +11,22 @@ import './chat.css'
 export default function ChatThread({ messages, busy, suggestions = [], onSuggest, error, greeting }) {
   const logRef = useRef(null)
 
-  // Follow the newest turn, however tall the thread gets.
+  // Follow the newest turn, however tall the thread gets. On phone widths the
+  // thread grows the page instead of scrolling itself, so follow there too —
+  // but only while the student is already near the bottom, so reading back
+  // through history is never yanked down. No behavior passed on purpose: the
+  // page's own scroll-behavior (smooth, auto under reduced motion) applies.
   useEffect(() => {
     const log = logRef.current
-    if (log) log.scrollTop = log.scrollHeight
+    if (!log || messages.length === 0) return
+    if (log.scrollHeight > log.clientHeight + 4) {
+      log.scrollTop = log.scrollHeight
+      return
+    }
+    const box = log.getBoundingClientRect()
+    if (box.bottom > window.innerHeight - 240) {
+      window.scrollTo({ top: document.documentElement.scrollHeight })
+    }
   }, [messages.length, busy, error])
 
   return (

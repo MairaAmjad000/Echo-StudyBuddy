@@ -14,6 +14,8 @@ import Flashcards from './pages/Flashcards.jsx'
 import QuizArena from './pages/QuizArena.jsx'
 import TeachEcho from './pages/TeachEcho.jsx'
 import ChatEcho from './pages/ChatEcho.jsx'
+import Whiteboard from './pages/Whiteboard.jsx'
+import Podcast from './pages/Podcast.jsx'
 import Performance from './pages/Performance.jsx'
 import Achievements from './pages/Achievements.jsx'
 import Settings from './pages/Settings.jsx'
@@ -118,6 +120,8 @@ export default function App() {
           <Route path="quiz" element={<QuizArena />} />
           <Route path="teach" element={<TeachEcho />} />
           <Route path="chat" element={<ChatEcho />} />
+          <Route path="whiteboard" element={<Whiteboard />} />
+          <Route path="podcast" element={<Podcast />} />
           <Route path="performance" element={<Performance />} />
           <Route path="achievements" element={<Achievements />} />
           <Route path="settings" element={<Settings />} />

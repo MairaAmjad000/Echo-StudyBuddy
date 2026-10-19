@@ -82,7 +82,8 @@ html.dark .companion-note-success::after {
 
 html.dark .btn-primary,
 html.dark .avatar-tick,
-html.dark .chat-turn-user .chat-bubble {
+html.dark .chat-turn-user .chat-bubble,
+html.dark .wb-step-index {
   color: #0b1222;
 }
 html.dark .btn-primary:hover:not(:disabled) {
@@ -159,6 +160,31 @@ html.dark .sidebar {
   box-shadow: 0 24px 48px -24px rgba(0, 0, 0, 0.7);
 }
 
+/* --- the whiteboard follows the theme too -------------------------------- */
+
+/* The board paints its own palette through --wb-* (see components/whiteboard/
+   whiteboard.css), so dark mode replaces the whole sheet in one block rather
+   than hunting literals. The navy sheet sits on the fog page the same way a
+   white sheet does: a shade darker than --sheet for the glass, an even darker
+   frame inside it, brighter dots so the grid still reads, and the pale-blue
+   answer wash turned into a raised navy panel. */
+html.dark .wb-board {
+  --wb-ink: #e7edfa;
+  --wb-ink-2: #a3b1c9;
+  --wb-blue: #7cb2ff;
+  --wb-blue-tint: #1c2b4b;
+  --wb-rule: rgba(231, 237, 250, 0.18);
+  --wb-sheet: #101a2e;
+  --wb-edge: #26344f;
+  --wb-frame: #0d1526;
+  --wb-dot: rgba(124, 178, 255, 0.26);
+  --wb-answer-bg: #16233d;
+  --wb-answer-edge: #35507e;
+  --wb-note-fg: #cdddf8;
+  --wb-on-blue: #0b1222;
+  --wb-lift: 0 26px 52px -36px rgba(0, 0, 0, 0.8);
+}
+
 /* --- printing comes out on paper, so the light palette returns ------------ */
 
 @media print {
@@ -185,5 +211,22 @@ html.dark .sidebar {
   html.dark .toast {
     -webkit-print-color-adjust: exact;
     print-color-adjust: exact;
+  }
+  /* The board reads on paper: back to the light sheet in every theme. */
+  html.dark .wb-board {
+    --wb-ink: #14213d;
+    --wb-ink-2: #4a5a72;
+    --wb-blue: #1f5fe0;
+    --wb-blue-tint: #e8f0fd;
+    --wb-rule: #d7e3f2;
+    --wb-sheet: #fbfdff;
+    --wb-edge: #cfdff1;
+    --wb-frame: #ffffff;
+    --wb-dot: rgba(31, 95, 224, 0.18);
+    --wb-answer-bg: #f1f7ff;
+    --wb-answer-edge: #bcd6fb;
+    --wb-note-fg: #24426e;
+    --wb-on-blue: #ffffff;
+    --wb-lift: none;
   }
 }
