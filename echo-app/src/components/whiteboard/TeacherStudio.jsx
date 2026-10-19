@@ -156,8 +156,7 @@ export default function TeacherStudio({
       )}
 
       <p className="wb-studio-note small muted">
-        Lessons are written with the AI key already on this server and read aloud in the same free Edge voice as the
-        podcast — no paid service is added. Photos are compressed on your device and never stored.
+        Lessons are written by echo focusing on main points
       </p>
     </section>
   )
