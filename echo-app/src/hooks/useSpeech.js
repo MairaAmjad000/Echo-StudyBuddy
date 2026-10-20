@@ -15,6 +15,21 @@ const TOUCH =
 const IOS_BROWSER = /CriOS|FxiOS|EdgiOS/i.test(UA)
 const SECURE = typeof window !== 'undefined' ? window.isSecureContext !== false : true
 
+// Words heard twice are words said once. The recogniser hands the same sentence
+// over again in two ways: at the top of a restarted session it replays the tail
+// of what it already heard, and inside a session it sometimes finalises the
+// same result twice. Compare on a flattened copy, so punctuation and spacing
+// cannot hide a repeat.
+const flat = (s) => s.toLowerCase().replace(/[^a-z0-9' ]+/g, ' ').replace(/\s+/g, ' ').trim()
+const alreadyHas = (said, seg) => {
+  if (!said || !seg) return false
+  if (said.endsWith(seg)) return true
+  // A longer phrase can come back out of order (the service replays the last
+  // few seconds, not the last sentence) — but only look for phrases long
+  // enough that finding them is not a coincidence.
+  return seg.length >= 8 && said.slice(-600).includes(seg)
+}
+
 const REASON = !SECURE
   ? 'Voice typing needs a secure page. Open the app over https (or localhost) to use the microphone, or type your explanation instead.'
   : IOS_BROWSER
@@ -51,6 +66,8 @@ export default function useSpeech() {
     fastEnds: 0,
     lastEndAt: 0,
     startedAt: 0,
+    said: 0,
+    finalAt: 0,
   })
 
   // Giving our own capture of the microphone back. On desktop this is only the
@@ -75,7 +92,8 @@ export default function useSpeech() {
     releaseMic()
     // Words the browser had not committed yet are still words that were said:
     // fold the live text in, so stopping the recorder never loses them.
-    if (x.live.trim()) x.final += `${x.live.trim()} `
+    const unspoken = x.live.trim()
+    if (unspoken && !alreadyHas(flat(x.final), flat(unspoken))) x.final += `${unspoken} `
     x.live = ''
     x.rec = null
     x.timer = x.hintTimer = x.restartTimer = null
@@ -135,6 +153,10 @@ export default function useSpeech() {
         fastEnds: 0,
         lastEndAt: 0,
         startedAt: Date.now(),
+        // Words appended in the recogniser session that is running now, and
+        // when the last of them landed.
+        said: 0,
+        finalAt: 0,
       }
       r.current = x
 
@@ -146,7 +168,13 @@ export default function useSpeech() {
       // points Echo scores against are written in English.
       rec.lang = (navigator.language || '').toLowerCase().startsWith('en') ? navigator.language : 'en-US'
 
-      rec.onstart = () => { if (r.current.active) setListening(true) }
+      rec.onstart = () => {
+        if (!r.current.active) return
+        // Every start is a new session: the first thing it reports may be an
+        // echo of the last session's final words.
+        r.current.said = 0
+        setListening(true)
+      }
       // The service telling us it is hearing something: on a phone this is the
       // only proof of life there is, now that we do not hold the mic ourselves.
       rec.onaudiostart = () => { r.current.audio = true }
@@ -155,11 +183,36 @@ export default function useSpeech() {
 
       rec.onresult = (e) => {
         const cur = r.current
+        // Results that arrive after the student pressed stop belong to a
+        // recording that is already over — the box has been read and scored.
+        if (!cur.active) return
+        const now = Date.now()
         let live = ''
         for (let i = e.resultIndex; i < e.results.length; i++) {
           const res = e.results[i]
-          if (res.isFinal) cur.final += `${res[0].transcript.trim()} `
-          else live += res[0].transcript
+          const text = res[0]?.transcript || ''
+          if (!res.isFinal) {
+            live += text
+            continue
+          }
+          const seg = flat(text)
+          if (!seg) continue
+          // Dropped when it only repeats words we already have. At the top of
+          // a session that means the service is replaying the tail of what we
+          // just wrote down — a sentence said once, written twice or thrice —
+          // so only a segment sitting at the very end counts; anything else is
+          // the student saying it again on purpose and is kept. Inside a
+          // session the window is a moment long, for a result the recogniser
+          // finalises a second time.
+          const heardSoFar = flat(cur.final)
+          const echoed =
+            cur.said === 0
+              ? heardSoFar.endsWith(seg)
+              : now - cur.finalAt < 1500 && alreadyHas(heardSoFar, seg)
+          if (echoed) continue
+          cur.final += `${text.trim()} `
+          cur.said += 1
+          cur.finalAt = now
         }
         cur.heard += 1
         cur.live = live
