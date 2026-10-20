@@ -2,7 +2,10 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <!-- interactive-widget: on Android the on-screen keyboard should shrink the
+         page (so the chat composer stays above the keys) instead of floating
+         over it. Browsers that ignore it are covered by useKeyboardInset. -->
+    <meta name="viewport" content="width=device-width, initial-scale=1, interactive-widget=resizes-content" />
     <title>Echo: study from your own notes</title>
     <meta name="description" content="Upload your slides, PDFs or a lecture link. Echo turns them into notes, flashcards and quizzes, then listens while you explain the topic and marks what you missed." />
     <link rel="icon" type="image/svg+xml" href="/strobi-favicon.svg" />

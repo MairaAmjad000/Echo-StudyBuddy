@@ -4,7 +4,7 @@ import './teach.css'
 
 /** Microphone panel: waveform, timer and a start / stop button. */
 export default function Recorder({ topic, speech, onStart, onStop }) {
-  const { supported, listening, seconds, analyser, error } = speech
+  const { supported, reason, listening, seconds, analyser, error, hint } = speech
   return (
     <section className="recorder surface" aria-label="Voice recorder">
       <p className="recorder-topic">Topic: <strong>{topic}</strong></p>
@@ -22,9 +22,8 @@ export default function Recorder({ topic, speech, onStart, onStop }) {
           </button>
         )}
       </div>
-      {!supported && (
-        <p className="field-error">Speech recognition is not supported in this browser (Chrome, Edge and Safari work). Type your explanation below instead.</p>
-      )}
+      {!supported && <p className="field-error">{reason}</p>}
+      {hint && <p className="recorder-hint">{hint}</p>}
       {error && <p className="field-error" role="alert">{error}</p>}
     </section>
   )

@@ -10,6 +10,7 @@
 .rec-btn.is-stop { border-color: var(--pen); }
 .rec-btn.is-stop span { border-radius: 3px; }
 .rec-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+.recorder-hint { font: 500 13.5px/1.45 var(--display); color: var(--ink-2); }
 
 .explain-box { margin-top: 20px; }
 .explain-box .field textarea { min-height: 150px; }

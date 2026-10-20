@@ -1,5 +1,6 @@
 import { useEffect, useRef } from 'react'
 import Button from '../ui/Button.jsx'
+import useKeyboardInset from '../../hooks/useKeyboardInset.js'
 import './chat.css'
 
 /**
@@ -11,6 +12,8 @@ import './chat.css'
  */
 export default function ChatComposer({ value, onChange, onSend, busy, disabled, hint }) {
   const field = useRef(null)
+  // The keyboard, if this device has one, is measured into --kb-inset.
+  useKeyboardInset()
 
   // Auto-grow: reset first, so the box also shrinks back after sending.
   useEffect(() => {
@@ -19,6 +22,23 @@ export default function ChatComposer({ value, onChange, onSend, busy, disabled, 
     el.style.height = 'auto'
     el.style.height = `${Math.min(el.scrollHeight, 180)}px`
   }, [value])
+
+  // The padding in chat.css lifts the composer above the keyboard, and this is
+  // the belt to that braces: browsers that scroll for the *caret* only can
+  // still leave the field's last line under the keys, so once the keyboard has
+  // settled, nudge the page by however much of the field is still covered.
+  const revealComposer = () => {
+    setTimeout(() => {
+      const el = field.current
+      if (!el) return
+      const inset = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--kb-inset')) || 0
+      const visibleBottom = window.innerHeight - inset
+      const rect = el.getBoundingClientRect()
+      if (rect.bottom > visibleBottom + 1) {
+        window.scrollBy({ top: rect.bottom - visibleBottom + 12, behavior: 'instant' })
+      }
+    }, 320)
+  }
 
   const submit = (e) => {
     e.preventDefault()
@@ -44,6 +64,7 @@ export default function ChatComposer({ value, onChange, onSend, busy, disabled, 
           value={value}
           onChange={(e) => onChange(e.target.value)}
           onKeyDown={onKeyDown}
+          onFocus={revealComposer}
           disabled={disabled}
           rows={1}
           maxLength={2000}

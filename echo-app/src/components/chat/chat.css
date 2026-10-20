@@ -31,6 +31,12 @@
 .chat {
   display: grid;
   grid-template-rows: auto minmax(0, 1fr) auto;
+  /* One column, floored at zero: an `auto` column sizes itself to the widest
+     row's min-content, so a momentarily wide control — Send becoming
+     "Thinking..." — used to widen every row past the phone's width and shove
+     the whole page sideways until the answer arrived. With a zero floor the
+     column is the conversation's width, always. */
+  grid-template-columns: minmax(0, 1fr);
   width: 100%;
   min-width: 0;
   min-height: 0;
@@ -301,7 +307,10 @@
 /* Starts one line tall and grows with the question, so the button always fits
    beside it instead of sitting on top of the text. */
 .chat-compose textarea {
-  flex: 1 1 auto;
+  /* A zero basis and zero width: the box fills whatever is left beside Send,
+     and its intrinsic width never enters the row's min-content. */
+  flex: 1 1 0;
+  width: 0;
   min-width: 0;
   min-height: 44px;
   max-height: 180px;
@@ -340,7 +349,7 @@
      The page never pans sideways — the gutter rule in base.css keeps the
      viewport width constant, this clips anything that still tries. */
   .chat-page { height: auto; min-height: calc(100vh - 120px); min-height: calc(100dvh - 120px); overflow: visible; overflow-x: clip; }
-  .chat-shell { grid-template-columns: 1fr; min-height: 0; }
+  .chat-shell { grid-template-columns: minmax(0, 1fr); min-height: 0; }
   /* A definite height, not just a cap: with one or two chats the rail would
      shrink to its rows, leaving a menu no room to open below them. */
   .chat-rail { height: 264px; }
@@ -362,7 +371,11 @@
     position: sticky;
     bottom: 0;
     background: var(--fog);
-    padding-bottom: calc(6px + env(safe-area-inset-bottom, 0px));
+    /* The on-screen keyboard's height arrives as --kb-inset (useKeyboardInset):
+       that much padding lifts the field above the keys while the composer's
+       own bottom edge stays put, which is what a sticky box can do. Browsers
+       that shrink the page for the keyboard report an inset of zero. */
+    padding-bottom: calc(6px + env(safe-area-inset-bottom, 0px) + var(--kb-inset, 0px));
   }
 }
 
